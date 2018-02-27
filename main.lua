@@ -1,5 +1,6 @@
-bump = require 'bump'
-fun = require 'fun'
+bump = require 'libs.bump'
+fun = require 'libs.fun'
+sti = require 'libs.sti'
 
 world = bump.newWorld()
 
