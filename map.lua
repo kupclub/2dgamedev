@@ -12,7 +12,7 @@ function map:load()
 	map.world = bump.newWorld()
 
 	map.maps.test:bump_init(map.world)
-	
+
 	map.world:add(player, player.x, player.y, player.w, player.h)
 
 end
@@ -22,6 +22,7 @@ function map:update(dt)
 end
 
 function map:draw()
+	love.graphics.setBackgroundColor(135, 206, 235) --sky blue
 	map.maps.test:draw()
 end
 
