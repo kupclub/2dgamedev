@@ -2,10 +2,12 @@ local Menu = {options = {"Play", "Credits"}}
 
 function Menu:draw()
 	local largeFont = love.graphics.newFont("fonts/Berkshire_Swash/BerkshireSwash-Regular.ttf", 48)
-	local regFont = love.graphics.newFont("fonts/Berkshire_Swash/BerkshireSwash-Regular.ttf", 24)	
+	local regFont = love.graphics.newFont("fonts/Berkshire_Swash/BerkshireSwash-Regular.ttf", 24)
+
 	-- Width of the canvas
 	local w = love.graphics.getWidth()
 	local title = "TITLE HERE"
+
 	-- Width of the menu strings to calculate the center of the screen
 	local tW = largeFont:getWidth(title)
 	local pW = regFont:getWidth(self.options[1])
