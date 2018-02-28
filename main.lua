@@ -5,8 +5,6 @@ beholder = require 'libs.beholder'
 
 map = require 'map'
 
-world = bump.newWorld()
-
 GRAVITY = 9.8
 
 player = {
@@ -18,13 +16,11 @@ player = {
     canJump = false
 }
 
-floor = {x = 0, y = 400, w = love.graphics.getWidth(), h = love.graphics.getHeight()}
-
 map:load()
 
 function player:update(dt)
     local goalX, goalY = player.x + player.vx * dt, player.y + player.vy * dt
-    local actualX, actualY, cols, len = world:move(player, goalX, goalY)
+    local actualX, actualY, cols, len = map.world:move(player, goalX, goalY)
     player.x, player.y = actualX, actualY
 
     if len > 0 then
@@ -32,12 +28,8 @@ function player:update(dt)
     end
 end
 
-world:add(player, player.x, player.y, player.w, player.h)
-world:add(floor, floor.x, floor.y, floor.w, floor.h)
-
 function love.draw()
     map:draw()
-    -- love.graphics.rectangle('fill', floor.x, floor.y, floor.w, floor.h)
     love.graphics.rectangle('fill', player.x, player.y, player.w, player.h)
 end
 

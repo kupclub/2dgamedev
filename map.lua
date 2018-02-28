@@ -6,8 +6,14 @@ local map = {}
 function map:load() 
 
 	map.maps = {
-		test = sti("res/test.lua")
+		test = sti("res/test.lua", {"bump"})
 	}
+
+	map.world = bump.newWorld()
+
+	map.maps.test:bump_init(map.world)
+	
+	map.world:add(player, player.x, player.y, player.w, player.h)
 
 end
 
