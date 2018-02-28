@@ -11,7 +11,7 @@ player = {
     speed = 180,
     jumpSpeed = 200,
     x = 0, y = 0,
-    w = 10, h = 10,
+    w = 70, h = 95,
     vx = 0, vy = 0,
     canJump = false
 }
@@ -30,7 +30,11 @@ end
 
 function love.draw()
     map:draw()
-    love.graphics.rectangle('fill', player.x, player.y, player.w, player.h)
+    -- love.graphics.rectangle('fill', floor.x, floor.y, floor.w, floor.h)
+    --love.graphics.rectangle('line', player.x, player.y, player.w, player.h)
+    player1 = love.graphics.newImage('res/img/p1_spritesheet.png')
+    stand=love.graphics.newQuad(0,0,70,95,player1:getDimensions())
+    love.graphics.draw(player1, stand, player.x, player.y)
 end
 
 function love.update(dt)
