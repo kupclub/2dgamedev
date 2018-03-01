@@ -542,7 +542,7 @@ function Map:setObjectSpriteBatches(layer)
 
 			batches[tileset] = batches[tileset] or newBatch(image)
 
-			local sx =  object.width / tile.width 
+			local sx =  object.width / tile.width
 			local sy =  object.height / tile.height
 
 			local batch = batches[tileset]
@@ -720,7 +720,7 @@ function Map:draw(tx, ty, sx, sy)
 	-- Scale map to 1.0 to draw onto canvas, this fixes tearing issues
 	-- Map is translated to correct position so the right section is drawn
 	lg.push()
-	lg.origin()
+	--lg.origin()
 	lg.translate(math.floor(tx or 0), math.floor(ty or 0))
 
 	for _, layer in ipairs(self.layers) do

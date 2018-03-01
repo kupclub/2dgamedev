@@ -3,6 +3,10 @@ fun = require 'libs.fun'
 sti = require 'libs.sti'
 beholder = require 'libs.beholder'
 
+-- math utility function
+require 'math'
+
+cam = require 'camera'
 map = require 'map'
 
 GRAVITY = 9.8
@@ -29,12 +33,19 @@ function player:update(dt)
 end
 
 function love.draw()
+    cam:follow(player)
+
+    -- start the camera
+    cam:set()
+
     map:draw()
-    -- love.graphics.rectangle('fill', floor.x, floor.y, floor.w, floor.h)
-    --love.graphics.rectangle('line', player.x, player.y, player.w, player.h)
+    love.graphics.rectangle('line', player.x, player.y, player.w, player.h)
     player1 = love.graphics.newImage('res/img/p1_spritesheet.png')
     stand=love.graphics.newQuad(0,0,70,95,player1:getDimensions())
     love.graphics.draw(player1, stand, player.x, player.y)
+
+    cam:unset()
+    -- stop the camera
 end
 
 function love.update(dt)
