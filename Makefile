@@ -1,3 +1,3 @@
-#Make file for MacOS
+#MacOS specific
 all:
 	/Applications/love.app/Contents/MacOS/love .

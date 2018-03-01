@@ -1,6 +1,7 @@
 bump = require 'libs.bump'
 fun = require 'libs.fun'
 sti = require 'libs.sti'
+menu = require 'menu'
 beholder = require 'libs.beholder'
 
 -- math utility function
@@ -30,6 +31,10 @@ function player:update(dt)
     if len > 0 then
         player.canJump = true
     end
+end
+
+function love.load()
+	
 end
 
 function love.draw()
