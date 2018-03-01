@@ -1,5 +1,8 @@
 local Menu = {options = {"Play", "Credits"}}
 
+function Menu:load()
+end
+
 function Menu:draw()
 	local largeFont = love.graphics.newFont("fonts/Berkshire_Swash/BerkshireSwash-Regular.ttf", 48)
 	local regFont = love.graphics.newFont("fonts/Berkshire_Swash/BerkshireSwash-Regular.ttf", 24)
@@ -21,6 +24,9 @@ function Menu:draw()
 	love.graphics.setFont(regFont)
 	love.graphics.printf(self.options[1], w/2 - pW/2, 300, pW, "center")
 	love.graphics.printf(self.options[2], w/2 - cW/2, 350, cW, "center")
+end
+
+function Menu:update(dt)
 end
 
 return Menu
