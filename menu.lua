@@ -1,12 +1,13 @@
 local Menu = {options = {"Play", "Credits"}}
 
+-- Define outside of draw function to prevent redefinition on every call
+local largeFont = love.graphics.newFont("fonts/Berkshire_Swash/BerkshireSwash-Regular.ttf", 48)
+local regFont = love.graphics.newFont("fonts/Berkshire_Swash/BerkshireSwash-Regular.ttf", 24)
+
 function Menu:load()
 end
 
 function Menu:draw()
-	local largeFont = love.graphics.newFont("fonts/Berkshire_Swash/BerkshireSwash-Regular.ttf", 48)
-	local regFont = love.graphics.newFont("fonts/Berkshire_Swash/BerkshireSwash-Regular.ttf", 24)
-
 	-- Width of the canvas
 	local w = love.graphics.getWidth()
 	local title = "TITLE HERE"
