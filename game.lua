@@ -13,8 +13,14 @@ player = {
 
 cam = require 'camera'
 map = require 'map'
+
+enemy = require 'enemy'
+
+enemy:load()
 map:load()
 
+
+enemy:new("slime", 200,150)
 
 function player:update(dt)
     local goalX, goalY = player.x + player.vx * dt, player.y + player.vy * dt
@@ -32,7 +38,8 @@ end
 function game:update(dt)
     player:update(dt)
     map:update(dt)
-
+	
+    enemy:update(dt)
     -- TODO use beholder, make a signal, and move this update code
     -- to the player update function
     if love.keyboard.isDown('left') then
@@ -57,6 +64,9 @@ function game:draw()
   cam:set()
 
   map:draw()
+
+  enemy:draw()
+
   --love.graphics.rectangle('line', player.x, player.y, player.w, player.h)
   player1 = love.graphics.newImage('res/img/p1_spritesheet.png')
   stand=love.graphics.newQuad(0,0,70,95,player1:getDimensions())
