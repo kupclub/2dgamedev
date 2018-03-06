@@ -57,11 +57,15 @@ function game:draw()
   cam:set()
 
   map:draw()
-  love.graphics.rectangle('line', player.x, player.y, player.w, player.h)
+  --love.graphics.rectangle('line', player.x, player.y, player.w, player.h)
   player1 = love.graphics.newImage('res/img/p1_spritesheet.png')
   stand=love.graphics.newQuad(0,0,70,95,player1:getDimensions())
-  love.graphics.draw(player1, stand, player.x, player.y)
-
+  jump=love.graphics.newQuad(436,92,70,95,player1:getDimensions())
+  if player.canJump then
+    love.graphics.draw(player1, stand, player.x, player.y)
+  else
+    love.graphics.draw(player1, jump, player.x, player.y)
+  end
   cam:unset()
 end
 
