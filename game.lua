@@ -61,8 +61,15 @@ function game:draw()
   player1 = love.graphics.newImage('res/img/p1_spritesheet.png')
   stand=love.graphics.newQuad(0,0,70,95,player1:getDimensions())
   jump=love.graphics.newQuad(436,92,70,95,player1:getDimensions())
+  run1=love.graphics.newQuad(0,92,70,95,player1:getDimensions())
+  run2=love.graphics.newQuad(73,98,70,95,player1:getDimensions())
   if player.canJump then
-    love.graphics.draw(player1, stand, player.x, player.y)
+    time=love.timer.getTime() * 10
+    if (time % 6) > 3 then
+      love.graphics.draw(player1, run1, player.x, player.y)
+    else
+      love.graphics.draw(player1, run2, player.x, player.y)
+    end
   else
     love.graphics.draw(player1, jump, player.x, player.y)
   end
