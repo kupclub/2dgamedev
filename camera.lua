@@ -46,12 +46,14 @@ end
 local cameraPadding = 60
 
 function camera:follow(o)
-    if o.x < self.x + cameraPadding then
-        self.x = o.x - cameraPadding
-    elseif o.x > self.x + love.graphics.getWidth() - cameraPadding then
-        self.x = o.x - love.graphics.getWidth() + cameraPadding
+    local tx = o.x + o.w / 2
+    local ty = o.y - o.h / 2
+    if tx < self.x + cameraPadding then
+        self.x = tx - cameraPadding
+    elseif tx > self.x + love.graphics.getWidth() - cameraPadding then
+        self.x = tx - love.graphics.getWidth() + cameraPadding
     end
-    self.y = o.y - love.graphics.getHeight() / 2
+    self.y = ty - love.graphics.getHeight() / 2
 end
 
 return camera
