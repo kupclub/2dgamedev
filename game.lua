@@ -8,7 +8,8 @@ player = {
     x = 0, y = 0,
     w = 70, h = 95,
     vx = 0, vy = 0,
-    canJump = false
+    canJump = false,
+    direction = 1
 }
 
 cam = require 'camera'
@@ -44,8 +45,10 @@ function game:update(dt)
     -- to the player update function
     if love.keyboard.isDown('left') then
         player.vx = -player.speed
+        player.direction=-1
     elseif love.keyboard.isDown('right') then
         player.vx = player.speed
+        player.direction=1
     else
         player.vx = 0
     end
@@ -73,15 +76,23 @@ function game:draw()
   jump=love.graphics.newQuad(436,92,70,95,player1:getDimensions())
   run1=love.graphics.newQuad(0,92,70,95,player1:getDimensions())
   run2=love.graphics.newQuad(73,98,70,95,player1:getDimensions())
+  local drawX = player.x
+  if player.direction == -1 then
+    drawX = drawX + player.w
+  end
+  time=love.timer.getTime() * 10
   if player.canJump then
-    time=love.timer.getTime() * 10
     if (time % 6) > 3 then
-      love.graphics.draw(player1, run1, player.x, player.y)
+      love.graphics.draw(player1, run1, drawX, player.y,0,player.direction,1)
     else
-      love.graphics.draw(player1, run2, player.x, player.y)
+      love.graphics.draw(player1, run2, drawX, player.y,0,player.direction,1)
     end
   else
-    love.graphics.draw(player1, jump, player.x, player.y)
+    if (time % 6) > 3 then
+      love.graphics.draw(player1, jump, drawX, player.y,0,player.direction,1)
+    else
+      love.graphics.draw(player1, jump, drawX, player.y,0,player.direction,1)
+    end
   end
   cam:unset()
 end
