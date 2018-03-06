@@ -1,9 +1,12 @@
 bump = require 'libs.bump'
 fun = require 'libs.fun'
 sti = require 'libs.sti'
-menu = require 'menu'
-game = require 'game'
 beholder = require 'libs.beholder'
+
+states = {
+    menu = require 'menu',
+    game = require 'game'
+}
 
 -- math utility function
 require 'math'
@@ -15,7 +18,7 @@ function sandboxLoad(file)
     return scriptEnv, chunk()
 end
 
-curState = game
+curState = states.menu
 
 function love.load()
     if not curState["load"] then
@@ -35,5 +38,14 @@ function love.update(dt)
     if not curState["update"] then
         error("YOU NEED TO IMPLEMENT AN UPDATE CALL! (with signature module:update(dt))")
     end
-    curState:update(dt)
+
+    local r = curState:update(dt)
+    -- XXX: for now, we assume that any string is a request to change state
+    if type(r) == "string" then
+        if not states[r] then
+            error("invalid state", r)
+        end
+        curState = states[r]
+        curState:load()
+    end
 end
