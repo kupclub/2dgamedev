@@ -57,7 +57,7 @@ function enemy:new(type, x,y)
 		timer = 0,
 	}
 
-	map.world.add(enemy.stack[id], enemy.stack[id].x,enemy.stack[id].y, 32,32)
+--	map.world.add(enemy.stack[id], enemy.stack[id].x,enemy.stack[id].y, 32,32)
 
 	return id
 end
