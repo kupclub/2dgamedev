@@ -18,7 +18,7 @@ function sandboxLoad(file)
     return scriptEnv, chunk()
 end
 
-curState = states.menu
+curState = states.game
 
 function love.load()
     if not curState["load"] then
