@@ -51,13 +51,8 @@ enemy = require 'enemy'
 enemy:load()
 map:load()
 
-<<<<<<< HEAD
 local foo = enemy:new("slime", 200,150)
 map.world:add(enemy.stack[foo], enemy.stack[foo].x,enemy.stack[foo].y, 32,32)
-=======
-
-enemy:new("slime", 200,150)
->>>>>>> 35dfa2e9cb027cdb354de9edb5cd79adf4622824
 
 
 function player:update(dt)
