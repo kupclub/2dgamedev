@@ -9,9 +9,9 @@ function enemy:load()
 
 	enemy.slime = {
 		frames = {
-			love.graphics.newQuad(0,125,  52,28, enemy.sheet:getDimensions()),
+			love.graphics.newQuad(0, 127, 51,28, enemy.sheet:getDimensions()),
 			love.graphics.newQuad(51,125, 53,28, enemy.sheet:getDimensions()),
-			love.graphics.newQuad(0,112,  59,12, enemy.sheet:getDimensions()),
+			love.graphics.newQuad(0, 112, 59,12, enemy.sheet:getDimensions()),
 		},
 		anims = {
 			walk = {2,3},
@@ -59,7 +59,7 @@ end
 
 function enemy:draw()
 	for i,v in ipairs(enemy.stack) do
-		love.graphics.draw(enemy.sheet, enemy.slime.frames[v.iter], v.x,v.y, 0, v.dir, 1, enemy[v.type].width/2)
+		love.graphics.draw(enemy.sheet, enemy.slime.frames[v.iter], v.x+enemy[v.type].width/2,v.y, 0, -v.dir, 1, enemy[v.type].width/2)
 		--[[love.graphics.setColor(255,0,0)
 		love.graphics.print(v.vx, v.x,v.y)
 		love.graphics.setColor(255,255,255)]]--
