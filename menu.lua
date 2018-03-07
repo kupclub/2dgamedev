@@ -1,4 +1,4 @@
-local Menu = {title = "TITLE HERE", options = {"Play", "Credits"}}
+local Menu = {title = "TITLE HERE", options = {"Play", "Credits"}, oWidths = {}, selected = 1}
 
 -- Define outside of draw function to prevent redefinition on every call
 local largeFont = love.graphics.newFont("fonts/Berkshire_Swash/BerkshireSwash-Regular.ttf", 48)
@@ -6,8 +6,11 @@ local regFont = love.graphics.newFont("fonts/Berkshire_Swash/BerkshireSwash-Regu
 
 -- Width of the menu strings to calculate the center of the screen
 local tW = largeFont:getWidth(Menu.title)
-local pW = regFont:getWidth(Menu.options[1])
-local cW = regFont:getWidth(Menu.options[2])
+
+for i,v in ipairs(Menu.options) do
+	local newWidth = regFont:getWidth(v)
+	Menu.oWidths[i] = newWidth
+end
 
 function Menu:load()
 end
@@ -22,11 +25,36 @@ function Menu:draw()
 
 	-- Use regFont for menu options
 	love.graphics.setFont(regFont)
-	love.graphics.printf(self.options[1], w/2 - pW/2, 300, pW, "center")
-	love.graphics.printf(self.options[2], w/2 - cW/2, 350, cW, "center")
+	
+	-- Starting Y coordinate in px
+	yCoord = 300
+
+	for i,v in ipairs(self.options) do
+		if self.selected == i then
+			-- Slightly darker than the sky blue in the game
+			love.graphics.setColor(135, 206, 255)
+		end
+
+		love.graphics.printf(v, w/2 - self.oWidths[i]/2, yCoord, self.oWidths[i], "center")
+		yCoord = yCoord + 50
+
+		-- Reset the color
+		love.graphics.setColor(255, 255, 255)
+	end
 end
 
 function Menu:update(dt)
+end
+
+-- Built in call back
+function love.keyreleased(key)
+	if key == "up" then 
+		if Menu.selected == 1 then Menu.selected = table.getn(Menu.options) else Menu.selected = Menu.selected - 1 end
+	end
+
+	if key == "down" then 
+		if Menu.selected == table.getn(Menu.options) then Menu.selected = 1 else Menu.selected = Menu.selected + 1 end	
+	end
 end
 
 return Menu
