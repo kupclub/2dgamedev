@@ -26,7 +26,10 @@ end
 function enemy:update(dt)
 	for i,v in ipairs(enemy.stack) do 
 		
-		v.y = v.y + GRAVITY/2
+		v.vy = v.vy + GRAVITY
+    		local goalX, goalY = v.x + v.vx * dt, v.y + v.vy * dt
+    		local actualX, actualY, cols, len = map.world:move(v, goalX, goalY)
+		v.x, v.y = actualX,actualY
 
 		--Animations
 		v.timer = v.timer + 1 * dt
@@ -53,6 +56,8 @@ function enemy:new(type, x,y)
 		type  = type,
 		x     = x,
 		y     = y,
+		vx    = 0,
+		vy    = 0,
 		iter  = 1,
 		timer = 0,
 	}

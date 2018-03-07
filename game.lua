@@ -54,7 +54,6 @@ map:load()
 local foo = enemy:new("slime", 200,150)
 map.world:add(enemy.stack[foo], enemy.stack[foo].x,enemy.stack[foo].y, 32,32)
 
-
 function player:update(dt)
     player.vy = player.vy + GRAVITY
     local goalX, goalY = player.x + player.vx * dt, player.y + player.vy * dt
@@ -74,6 +73,7 @@ end
 
 function game:update(dt)
     player:update(dt)
+    enemy:update(dt)
     map:update(dt)
 end
 
