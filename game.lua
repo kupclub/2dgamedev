@@ -94,6 +94,7 @@ function game:draw()
   jump=love.graphics.newQuad(436,92,70,95,player1:getDimensions())
   run1=love.graphics.newQuad(0,92,70,95,player1:getDimensions())
   run2=love.graphics.newQuad(73,98,70,95,player1:getDimensions())
+  gun1 = love.graphics.newImage('res/img/gun.png')
   local drawX = player.x
   if player.direction == -1 then
     drawX = drawX + player.w
@@ -112,9 +113,13 @@ function game:draw()
       love.graphics.draw(player1, jump, drawX, player.y,0,player.direction,1)
     end
   end
-  
-  gun1 = love.graphics.newImage('res/img/gun.png')
-  love.graphics.draw(gun1, player.x+30, player.y+60,0,0.55,0.72)
+  if player.direction == 1 then
+    love.graphics.draw(gun1, drawX+30, player.y+60,0,0.55,0.72)
+  else
+    love.graphics.draw(gun1, drawX-30, player.y+60,0,-0.55,0.72)
+  end
+
+
 
   cam:unset()
 end
