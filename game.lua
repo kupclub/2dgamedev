@@ -52,7 +52,7 @@ enemy:load()
 map:load()
 
 local foo = enemy:new("slime", 200,150)
-map.world:add(enemy.stack[foo], enemy.stack[foo].x,enemy.stack[foo].y, 32,32)
+map.world:add(enemy.stack[foo], enemy.stack[foo].x,enemy.stack[foo].y, 52,28)
 
 function player:update(dt)
     player.vy = player.vy + GRAVITY

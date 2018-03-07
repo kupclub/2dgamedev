@@ -20,12 +20,26 @@ function enemy:load()
 		width = 52,
 		height = 25,
 		animspeed = 0.5,
+
+		speed = 2,
+
+		bt = 5, --Boredom Threshold: gets bored after ~5 seconds TEMP
 	}
 end
 
 function enemy:update(dt)
 	for i,v in ipairs(enemy.stack) do 
-		
+
+		--Test behavior
+		v.boredom = v.boredom + 1 * dt
+		if v.boredom >= enemy[v.type].bt then
+			v.boredom = 0
+			v.dir = v.dir * -1
+			v.vx = 0
+		end
+
+		v.vx = v.vx + (enemy[v.type].speed*v.dir)
+
 		v.vy = v.vy + GRAVITY
     		local goalX, goalY = v.x + v.vx * dt, v.y + v.vy * dt
     		local actualX, actualY, cols, len = map.world:move(v, goalX, goalY)
@@ -45,7 +59,10 @@ end
 
 function enemy:draw()
 	for i,v in ipairs(enemy.stack) do
-		love.graphics.draw(enemy.sheet, enemy.slime.frames[v.iter], v.x,v.y)
+		love.graphics.draw(enemy.sheet, enemy.slime.frames[v.iter], v.x,v.y, 0, v.dir, 1, enemy[v.type].width/2)
+		--[[love.graphics.setColor(255,0,0)
+		love.graphics.print(v.vx, v.x,v.y)
+		love.graphics.setColor(255,255,255)]]--
 	end
 end
 
@@ -60,10 +77,11 @@ function enemy:new(type, x,y)
 		vy    = 0,
 		iter  = 1,
 		timer = 0,
+		dir   = 1,
+		boredom = 0, --temp
 	}
 	
 	return id
 end
-
 
 return enemy
