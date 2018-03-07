@@ -44,7 +44,8 @@ enemy = require 'enemy'
 enemy:load()
 map:load()
 
-enemy:new("slime", 200,150)
+local foo = enemy:new("slime", 200,150)
+map.world:add(enemy.stack[foo], enemy.stack[foo].x,enemy.stack[foo].y, 32,32)
 
 function player:update(dt)
     player.vy = player.vy + GRAVITY
@@ -66,6 +67,7 @@ end
 function game:update(dt)
     player:update(dt)
     map:update(dt)
+    enemy:update(dt)
 end
 
 function game:draw()

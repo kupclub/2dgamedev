@@ -56,9 +56,7 @@ function enemy:new(type, x,y)
 		iter  = 1,
 		timer = 0,
 	}
-
---	map.world.add(enemy, x,y, enemy[type].width, enemy[type].height)
-
+	
 	return id
 end
 
