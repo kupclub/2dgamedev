@@ -11,12 +11,34 @@ player = {
     canJump = false
 }
 
+function player:left()
+  self.vx = -self.speed
+end
+
+function player:right()
+  self.vx = self.speed
+end
+
+function player:jump()
+  if self.canJump then
+    self.vy = -self.jumpSpeed
+    self.canJump = false
+  end
+end
+
+beholder.group(player, function()
+  beholder.observe("control-up", function() player:jump() end)
+  --beholder.observe("control-down", player:jump)
+  beholder.observe("control-left", function() player:left() end)
+  beholder.observe("control-right", function() player:right() end)
+end)
+
 cam = require 'camera'
 map = require 'map'
 map:load()
 
-
 function player:update(dt)
+    player.vy = player.vy + GRAVITY
     local goalX, goalY = player.x + player.vx * dt, player.y + player.vy * dt
     local actualX, actualY, cols, len = map.world:move(player, goalX, goalY)
     player.x, player.y = actualX, actualY
@@ -24,6 +46,9 @@ function player:update(dt)
     if len > 0 then
         player.canJump = true
     end
+
+    -- reset vx so player input doesn't keep vx going when a key is released
+    player.vx = 0
 end
 
 function game:load()
@@ -32,22 +57,6 @@ end
 function game:update(dt)
     player:update(dt)
     map:update(dt)
-
-    -- TODO use beholder, make a signal, and move this update code
-    -- to the player update function
-    if love.keyboard.isDown('left') then
-        player.vx = -player.speed
-    elseif love.keyboard.isDown('right') then
-        player.vx = player.speed
-    else
-        player.vx = 0
-    end
-    if player.canJump and love.keyboard.isDown('up') then
-        player.vy = -player.jumpSpeed
-        player.canJump = false
-    else
-        player.vy = player.vy + GRAVITY
-    end
 end
 
 function game:draw()

@@ -48,4 +48,20 @@ function love.update(dt)
         curState = states[r]
         curState:load()
     end
+
+    if love.keyboard.isDown("left") then
+        beholder.trigger("control-left")
+    end
+
+    if love.keyboard.isDown("right") then
+        beholder.trigger("control-right")
+    end
+
+    if love.keyboard.isDown("up") then
+        beholder.trigger("control-up")
+    end
+
+    if love.keyboard.isDown("down") then
+        beholder.trigger("control-down")
+    end
 end
