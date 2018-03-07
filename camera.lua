@@ -43,7 +43,7 @@ function camera:setScale(sx, sy)
   self.scaleY = sy or self.scaleY
 end
 
-local cameraPadding = 60
+local cameraPadding = 175
 
 function camera:follow(o)
     local tx = o.x + o.w / 2
