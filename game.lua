@@ -12,6 +12,7 @@ player = {
     direction = 1
 }
 
+
 function player:left()
   self.vx = -self.speed
   self.direction=-1
@@ -36,6 +37,12 @@ beholder.group(player, function()
   beholder.observe("control-right", function() player:right() end)
 end)
 
+gun = {
+    x = 0, y = 0,
+    ammo = 20
+}
+
+
 cam = require 'camera'
 map = require 'map'
 
@@ -44,7 +51,9 @@ enemy = require 'enemy'
 enemy:load()
 map:load()
 
+
 enemy:new("slime", 200,150)
+
 
 function player:update(dt)
     player.vy = player.vy + GRAVITY
@@ -81,6 +90,7 @@ function game:draw()
   --love.graphics.rectangle('line', player.x, player.y, player.w, player.h)
   player1 = love.graphics.newImage('res/img/p1_spritesheet.png')
   stand=love.graphics.newQuad(0,0,70,95,player1:getDimensions())
+
   jump=love.graphics.newQuad(436,92,70,95,player1:getDimensions())
   run1=love.graphics.newQuad(0,92,70,95,player1:getDimensions())
   run2=love.graphics.newQuad(73,98,70,95,player1:getDimensions())
@@ -102,6 +112,10 @@ function game:draw()
       love.graphics.draw(player1, jump, drawX, player.y,0,player.direction,1)
     end
   end
+  
+  gun1 = love.graphics.newImage('res/img/gun.png')
+  love.graphics.draw(gun1, player.x+30, player.y+60,0,0.55,0.72)
+
   cam:unset()
 end
 
