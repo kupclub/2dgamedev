@@ -24,6 +24,7 @@ end
 function map:draw()
 	love.graphics.setBackgroundColor(135, 206, 235) --sky blue
 	map.cur:draw()
+	map.cur:bump_draw(map.world)
 end
 
 return map

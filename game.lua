@@ -4,19 +4,22 @@ GRAVITY = 9.8
 
 player = {
     speed = 180,
-    jumpSpeed = 200,
+    jumpSpeed = 400,
     x = 0, y = 0,
     w = 70, h = 95,
     vx = 0, vy = 0,
-    canJump = false
+    canJump = false,
+    direction = 1
 }
 
 function player:left()
   self.vx = -self.speed
+  self.direction=-1
 end
 
 function player:right()
   self.vx = self.speed
+  player.direction=1
 end
 
 function player:jump()
@@ -35,7 +38,13 @@ end)
 
 cam = require 'camera'
 map = require 'map'
+
+enemy = require 'enemy'
+
+enemy:load()
 map:load()
+
+enemy:new("slime", 200,150)
 
 function player:update(dt)
     player.vy = player.vy + GRAVITY
@@ -66,14 +75,32 @@ function game:draw()
   cam:set()
 
   map:draw()
+
+  enemy:draw()
+
   --love.graphics.rectangle('line', player.x, player.y, player.w, player.h)
   player1 = love.graphics.newImage('res/img/p1_spritesheet.png')
   stand=love.graphics.newQuad(0,0,70,95,player1:getDimensions())
   jump=love.graphics.newQuad(436,92,70,95,player1:getDimensions())
+  run1=love.graphics.newQuad(0,92,70,95,player1:getDimensions())
+  run2=love.graphics.newQuad(73,98,70,95,player1:getDimensions())
+  local drawX = player.x
+  if player.direction == -1 then
+    drawX = drawX + player.w
+  end
+  time=love.timer.getTime() * 10
   if player.canJump then
-    love.graphics.draw(player1, stand, player.x, player.y)
+    if (time % 6) > 3 then
+      love.graphics.draw(player1, run1, drawX, player.y,0,player.direction,1)
+    else
+      love.graphics.draw(player1, run2, drawX, player.y,0,player.direction,1)
+    end
   else
-    love.graphics.draw(player1, jump, player.x, player.y)
+    if (time % 6) > 3 then
+      love.graphics.draw(player1, jump, drawX, player.y,0,player.direction,1)
+    else
+      love.graphics.draw(player1, jump, drawX, player.y,0,player.direction,1)
+    end
   end
   cam:unset()
 end
