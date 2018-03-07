@@ -44,6 +44,10 @@ function Menu:draw()
 end
 
 function Menu:update(dt)
+	-- If you press enter on the play option
+	if love.keyboard.isDown("return") and self.selected == 1 then
+		return "game"
+	end
 end
 
 -- Built in call back
