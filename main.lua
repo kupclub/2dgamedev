@@ -3,6 +3,7 @@ fun = require 'libs.fun'
 sti = require 'libs.sti'
 beholder = require 'libs.beholder'
 repl = require 'libs.repl'
+inspect = require 'libs.inspect'
 
 states = {
     menu = require 'menu',
