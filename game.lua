@@ -4,7 +4,7 @@ GRAVITY = 9.8
 
 player = {
     speed = 180,
-    jumpSpeed = 200,
+    jumpSpeed = 400,
     x = 0, y = 0,
     w = 70, h = 95,
     vx = 0, vy = 0,
@@ -39,7 +39,7 @@ end
 function game:update(dt)
     player:update(dt)
     map:update(dt)
-	
+
     enemy:update(dt)
     -- TODO use beholder, make a signal, and move this update code
     -- to the player update function
