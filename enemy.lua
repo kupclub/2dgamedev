@@ -21,7 +21,7 @@ function enemy:load()
 		height = 25,
 		animspeed = 0.5,
 
-		speed = 2,
+		speed = 7500,
 
 		bt = 5, --Boredom Threshold: gets bored after ~5 seconds TEMP
 	}
@@ -38,7 +38,7 @@ function enemy:update(dt)
 			v.vx = 0
 		end
 
-		v.vx = v.vx + (enemy[v.type].speed*v.dir)
+		v.vx = (enemy[v.type].speed*v.dir)*dt
 
 		v.vy = v.vy + GRAVITY
     		local goalX, goalY = v.x + v.vx * dt, v.y + v.vy * dt
