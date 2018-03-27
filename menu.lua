@@ -27,8 +27,9 @@ function Menu:draw()
 	love.graphics.setFont(regFont)
 	
 	-- Starting Y coordinate in px
-	yCoord = 300
-
+	startingYCoord = 300
+	yCoord = startingYCoord
+	
 	for i,v in ipairs(self.options) do
 		if self.selected == i then
 			-- Slightly darker than the sky blue in the game
@@ -37,10 +38,19 @@ function Menu:draw()
 
 		love.graphics.printf(v, w/2 - self.oWidths[i]/2, yCoord, self.oWidths[i], "center")
 		yCoord = yCoord + 50
-
 		-- Reset the color
 		love.graphics.setColor(255, 255, 255)
 	end
+
+	-- Set the color for the circle
+	love.graphics.setColor(135, 206, 255)
+
+	-- Add menu dots to the selected option
+	love.graphics.circle("fill", w/2 - self.oWidths[self.selected], startingYCoord + (50 * (self.selected - 1)) + 15, 7)
+	love.graphics.circle("fill", w/2 + self.oWidths[self.selected], startingYCoord + (50 * (self.selected - 1)) + 15, 7)
+
+	-- Reset the color
+	love.graphics.setColor(255, 255, 255)
 end
 
 function Menu:update(dt)
@@ -53,11 +63,19 @@ end
 -- Built in call back
 function love.keyreleased(key)
 	if key == "up" then 
-		if Menu.selected == 1 then Menu.selected = table.getn(Menu.options) else Menu.selected = Menu.selected - 1 end
+		if Menu.selected == 1 then 
+			Menu.selected = table.getn(Menu.options) 
+		else 
+			Menu.selected = Menu.selected - 1 
+		end
 	end
 
 	if key == "down" then 
-		if Menu.selected == table.getn(Menu.options) then Menu.selected = 1 else Menu.selected = Menu.selected + 1 end	
+		if Menu.selected == table.getn(Menu.options) then 
+			Menu.selected = 1 
+		else
+			Menu.selected = Menu.selected + 1
+		end	
 	end
 end
 
