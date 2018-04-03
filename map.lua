@@ -7,14 +7,13 @@ function map:load()
 	map.maps = {
 		test = sti("res/test.lua", {"bump"})
 	}
-	
+
 	map.cur = map.maps.test --Current map
 
 	map.world = bump.newWorld()
 
 	map.cur:bump_init(map.world)
 
-	map.world:add(player, player.x, player.y, player.w, player.h)
 end
 
 function map:update(dt)

@@ -46,6 +46,9 @@ end
 local cameraPadding = 175
 
 function camera:follow(o)
+    if type(o) ~= "table" then
+      error("expected to follow a table object")
+    end
     local tx = o.x + o.w / 2
     local ty = o.y - o.h / 2
     if tx < self.x + cameraPadding then
