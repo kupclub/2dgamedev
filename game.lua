@@ -46,7 +46,7 @@ MAXBULLETS = 40
 
 function player:fire()
   if love.timer.getTime() - self.lastfire > FIRETIME then
-    local b = {type = 'bullet', x = self.x + self.w / 2, y = self.y + self.h / 2, vx = 400, vy = 0}
+    local b = {type = 'bullet', x = self.x + self.w / 2, y = self.y + self.h / 2, vx = 400 * self.direction, vy = 0}
     map.world:add(b, b.x, b.y, 10, 10)
     table.insert(self.bullets, b)
     self.lastfire = love.timer.getTime()
