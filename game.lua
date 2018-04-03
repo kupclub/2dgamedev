@@ -89,6 +89,7 @@ function fireGun(player)
     table.insert(state.bullets, b)
     player.lastfire = love.timer.getTime()
   end
+
 end
 
 me = newPlayer(0, 0)
@@ -111,28 +112,37 @@ end
 function game:update(dt)
   fun.each(function(p) updatePlayer(dt, p) end, state.players)
 
-  do -- update bullets
-    for i, b in ipairs(state.bullets) do
-      b.vy = b.vy + GRAVITY
-      local x, y, _, _ = map.world:move(b, b.x + b.vx * dt, b.y + b.vy * dt,
-      function(item, other)
-        if other.type == "player" then
-          return nil
-        end
-        return "slide"
-      end)
-      b.x = x
-      b.y = y
-      if #state.bullets > MAXBULLETS then
-        map.world:remove(table.remove(state.bullets, 1))
-      end
+  for i, b in ipairs(state.bullets) do
+	b.vy = b.vy + GRAVITY
+    local x, y, cols, _ = map.world:move(b, b.x + b.vx * dt, b.y + b.vy * dt,
+    function(item, other)
+      if other.type == "player" then
+        return nil
+	  end
+      return "bounce"
+    end)
+
+    b.x = x
+    b.y = y
+
+    if #state.bullets > MAXBULLETS then
+      map.world:remove(table.remove(player.bullets, 1))
     end
+
+	for i, col in ipairs(cols) do
+		-- the bullet is hitting a wall
+		if col.type == "bounce" then
+			if col.normal.x ~= 0 then
+				col.item.vx = math.abs(col.item.vx) * col.normal.x
+			end
+			col.item.vy = math.abs(col.item.vy) * col.normal.y
+		end
+	end
+
   end
 
   enemy:update(dt)
   map:update(dt)
-
-
 end
 
 player1 = love.graphics.newImage('res/img/p1_spritesheet.png')
