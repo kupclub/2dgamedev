@@ -1,7 +1,7 @@
 cam = require 'camera'
 map = require 'map'
-
 enemy = require 'enemy'
+net = require 'net'
 
 local game = {}
 
@@ -9,7 +9,6 @@ local state = {
   players = {},
   bullets = {}
 }
-
 
 FIRETIME = 0.2
 MAXBULLETS = 40
@@ -24,10 +23,10 @@ player_attrs = {
 enemy:load()
 map:load()
 
-function newPlayer()
+function newPlayer(x_, y_)
   local p = {
     type = "player",
-    x = 0, y = 0,
+    x = x_, y = y_,
     vx = 0, vy = 0,
     canJump = false,
     direction = 1,
@@ -92,7 +91,8 @@ function fireGun(player)
   end
 end
 
-me = newPlayer()
+me = newPlayer(0, 0)
+me2 = newPlayer(100, 0)
 
 beholder.group(player, function()
   beholder.observe("control-up", function() jump(me) end)
@@ -109,7 +109,7 @@ function game:load()
 end
 
 function game:update(dt)
-  updatePlayer(dt, me)
+  fun.each(function(p) updatePlayer(dt, p) end, state.players)
 
   do -- update bullets
     for i, b in ipairs(state.bullets) do
@@ -142,6 +142,33 @@ run1=love.graphics.newQuad(0,92,70,95,player1:getDimensions())
 run2=love.graphics.newQuad(73,98,70,95,player1:getDimensions())
 gun1 = love.graphics.newImage('res/img/gun.png')
 
+function drawPlayer(player)
+  --love.graphics.rectangle('line', player.x, player.y, player.w, player.h)
+  local drawX = player.x
+  if player.direction == -1 then
+    drawX = drawX + player.w
+  end
+  time=love.timer.getTime() * 10
+  if player.canJump then
+    if (time % 6) > 3 then
+      love.graphics.draw(player1, run1, drawX, player.y,0,player.direction,1)
+    else
+      love.graphics.draw(player1, run2, drawX, player.y,0,player.direction,1)
+    end
+  else
+    if (time % 6) > 3 then
+      love.graphics.draw(player1, jumpFrame, drawX, player.y,0,player.direction,1)
+    else
+      love.graphics.draw(player1, jumpFrame, drawX, player.y,0,player.direction,1)
+    end
+  end
+  if player.direction == 1 then
+    love.graphics.draw(gun1, drawX+30, player.y+60,0,0.55,0.72)
+  else
+    love.graphics.draw(gun1, drawX-30, player.y+60,0,-0.55,0.72)
+  end
+end
+
 function game:draw()
   cam:follow(me)
 
@@ -150,33 +177,9 @@ function game:draw()
 
   map:draw()
 
+  fun.each(drawPlayer, state.players)
+
   enemy:draw()
-
-  --love.graphics.rectangle('line', player.x, player.y, player.w, player.h)
-  local drawX = me.x
-  if me.direction == -1 then
-    drawX = drawX + me.w
-  end
-  time=love.timer.getTime() * 10
-  if me.canJump then
-    if (time % 6) > 3 then
-      love.graphics.draw(player1, run1, drawX, me.y,0,me.direction,1)
-    else
-      love.graphics.draw(player1, run2, drawX, me.y,0,me.direction,1)
-    end
-  else
-    if (time % 6) > 3 then
-      love.graphics.draw(player1, jumpFrame, drawX, me.y,0,me.direction,1)
-    else
-      love.graphics.draw(player1, jumpFrame, drawX, me.y,0,me.direction,1)
-    end
-  end
-  if me.direction == 1 then
-    love.graphics.draw(gun1, drawX+30, me.y+60,0,0.55,0.72)
-  else
-    love.graphics.draw(gun1, drawX-30, me.y+60,0,-0.55,0.72)
-  end
-
 
   -- draw bullets
   for _, b in pairs(state.bullets) do

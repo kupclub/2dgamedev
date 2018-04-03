@@ -1,18 +1,22 @@
-socket = require "socket"
+local socket = require "socket"
 local bitser = require "libs.bitser"
 
 UPDATERATE = 0.1
-local address, port = "localhost", 1234
 
-function connect()
+local t = {}
+
+function t.connect(addr, port)
   local udp = socket.udp()
   udp:settimeout(0)
   udp:setpeername(address, port)
-  bitser.dumps()
-  udp:send("HI")
+  return udp
 end
 
-function runServer()
+function t.pokeServer(connection, state)
+  connection:send(bitser.dumps(state))
+end
+
+function t.runServer()
   local udp = socket.udp()
 
   udp:settimeout(0)
@@ -30,3 +34,5 @@ function runServer()
     end
   end
 end
+
+return t
