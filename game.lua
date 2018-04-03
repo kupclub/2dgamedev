@@ -82,8 +82,9 @@ function fireGun(player)
       owner = player,
       x = player.x + player.w / 2,
       y = player.y + player.h / 2,
-      vx = 400,
-      vy = 0
+      vx = 400 * player.direction,
+      vy = 0,
+	  ttl = 3
     }
     map.world:add(b, b.x, b.y, 10, 10)
     table.insert(state.bullets, b)
@@ -126,12 +127,18 @@ function game:update(dt)
     b.y = y
 
     if #state.bullets > MAXBULLETS then
-      map.world:remove(table.remove(player.bullets, 1))
+      map.world:remove(table.remove(state.bullets, 1))
     end
 
 	for i, col in ipairs(cols) do
 		-- the bullet is hitting a wall
 		if col.type == "bounce" then
+			col.item.ttl = col.item.ttl - 1
+
+			if col.item.ttl == 0 then 
+				map.world:remove(table.remove(state.bullets, i))
+			end
+
 			if col.normal.x ~= 0 then
 				col.item.vx = math.abs(col.item.vx) * col.normal.x
 			end
