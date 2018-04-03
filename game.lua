@@ -3,13 +3,16 @@ local game = {}
 GRAVITY = 9.8
 
 player = {
-    speed = 180,
-    jumpSpeed = 400,
-    x = 0, y = 0,
-    w = 70, h = 95,
-    vx = 0, vy = 0,
-    canJump = false,
-    direction = 1
+  speed = 180,
+  jumpSpeed = 400,
+  x = 0, y = 0,
+  w = 70, h = 95,
+  vx = 0, vy = 0,
+  canJump = false,
+  direction = 1,
+  lastfire = 0,
+  bullets = {},
+  type = "player"
 }
 
 
@@ -35,13 +38,20 @@ beholder.group(player, function()
   --beholder.observe("control-down", player:jump)
   beholder.observe("control-left", function() player:left() end)
   beholder.observe("control-right", function() player:right() end)
+  beholder.observe("control-fire", function() player:fire() end)
 end)
 
-gun = {
-    x = 0, y = 0,
-    ammo = 20
-}
+FIRETIME = 0.2
+MAXBULLETS = 40
 
+function player:fire()
+  if love.timer.getTime() - self.lastfire > FIRETIME then
+    local b = {type = 'bullet', x = self.x + self.w / 2, y = self.y + self.h / 2, vx = 400, vy = 0}
+    map.world:add(b, b.x, b.y, 10, 10)
+    table.insert(self.bullets, b)
+    self.lastfire = love.timer.getTime()
+  end
+end
 
 cam = require 'camera'
 map = require 'map'
@@ -55,27 +65,55 @@ local foo = enemy:new("slime", 200,150)
 map.world:add(enemy.stack[foo], enemy.stack[foo].x,enemy.stack[foo].y, 32,32)
 
 function player:update(dt)
-    player.vy = player.vy + GRAVITY
-    local goalX, goalY = player.x + player.vx * dt, player.y + player.vy * dt
-    local actualX, actualY, cols, len = map.world:move(player, goalX, goalY)
-    player.x, player.y = actualX, actualY
-
-    if len > 0 then
-        player.canJump = true
+  player.vy = player.vy + GRAVITY
+  local goalX, goalY = player.x + player.vx * dt, player.y + player.vy * dt
+  local actualX, actualY, cols, len = map.world:move(player, goalX, goalY, function(item, other)
+    if other.type == "bullet" then
+      return nil
     end
+    return "slide"
+  end)
+  player.x, player.y = actualX, actualY
 
-    -- reset vx so player input doesn't keep vx going when a key is released
-    player.vx = 0
+  if len > 0 then
+    player.canJump = true
+  end
+
+  -- reset vx so player input doesn't keep vx going when a key is released
+  player.vx = 0
+
+  for i, b in ipairs(player.bullets) do
+    b.vy = b.vy + GRAVITY
+    local x, y, _, _ = map.world:move(b, b.x + b.vx * dt, b.y + b.vy * dt,
+    function(item, other)
+      if other.type == "player" then
+        return nil
+      end
+      return "slide"
+    end)
+    b.x = x
+    b.y = y
+    if #player.bullets > MAXBULLETS then
+      map.world:remove(table.remove(player.bullets, 1))
+    end
+  end
 end
 
 function game:load()
 end
 
 function game:update(dt)
-    player:update(dt)
-    enemy:update(dt)
-    map:update(dt)
+  player:update(dt)
+  enemy:update(dt)
+  map:update(dt)
 end
+
+player1 = love.graphics.newImage('res/img/p1_spritesheet.png')
+stand=love.graphics.newQuad(0,0,70,95,player1:getDimensions())
+jump=love.graphics.newQuad(436,92,70,95,player1:getDimensions())
+run1=love.graphics.newQuad(0,92,70,95,player1:getDimensions())
+run2=love.graphics.newQuad(73,98,70,95,player1:getDimensions())
+gun1 = love.graphics.newImage('res/img/gun.png')
 
 function game:draw()
   cam:follow(player)
@@ -88,13 +126,6 @@ function game:draw()
   enemy:draw()
 
   --love.graphics.rectangle('line', player.x, player.y, player.w, player.h)
-  player1 = love.graphics.newImage('res/img/p1_spritesheet.png')
-  stand=love.graphics.newQuad(0,0,70,95,player1:getDimensions())
-
-  jump=love.graphics.newQuad(436,92,70,95,player1:getDimensions())
-  run1=love.graphics.newQuad(0,92,70,95,player1:getDimensions())
-  run2=love.graphics.newQuad(73,98,70,95,player1:getDimensions())
-  gun1 = love.graphics.newImage('res/img/gun.png')
   local drawX = player.x
   if player.direction == -1 then
     drawX = drawX + player.w
@@ -120,6 +151,10 @@ function game:draw()
   end
 
 
+  -- draw bullets
+  for _, b in pairs(player.bullets) do
+    love.graphics.rectangle('fill', b.x, b.y, 10, 10)
+  end
 
   cam:unset()
 end

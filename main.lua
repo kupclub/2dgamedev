@@ -66,6 +66,10 @@ function love.update(dt)
         beholder.trigger("control-down")
     end
 
+    if love.keyboard.isDown("space") then
+        beholder.trigger("control-fire")
+    end
+
     if love.keyboard.isDown("f8") then
         debug.debug()
     end
