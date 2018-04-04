@@ -135,13 +135,14 @@ function game:update(dt)
 		if col.type == "bounce" then
 			col.item.ttl = col.item.ttl - 1
 
-			if col.item.ttl == 0 then 
+			if col.item.ttl <= 0 then 
 				map.world:remove(table.remove(state.bullets, i))
 			end
 
 			if col.normal.x ~= 0 then
 				col.item.vx = math.abs(col.item.vx) * col.normal.x
 			end
+
 			col.item.vy = math.abs(col.item.vy) * col.normal.y
 		end
 	end
