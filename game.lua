@@ -102,7 +102,6 @@ end
 
 function takeDamage(player)
 	player.hp = player.hp - 10
-	print(player.hp)
 end
 
 me = newPlayer(0, 0,"pink")
@@ -176,7 +175,12 @@ function game:update(dt)
 	  end
 
 	  if doKill then
-	    map.world:remove(table.remove(state.bullets, i))
+	    local n = table.remove(state.bullets, i)
+	    if n then
+	      map.world:remove(n)
+	    else
+	      print("RERRRRRR CHARLES ITS HAPPENING AGINNNNN")
+	    end
 	  end
 	end
 
@@ -189,7 +193,6 @@ function game:update(dt)
     enemy:update(dt)
     map:update(dt)
 end
-
 
 stand=love.graphics.newQuad(0,0,70,95,player_attrs.skins["pink"]:getDimensions())
 jumpFrame=love.graphics.newQuad(436,92,70,95,player_attrs.skins["pink"]:getDimensions())
@@ -219,6 +222,20 @@ function drawPlayer(player)
 	     end
 
     end
+
+	health = player.w * (player.hp / 100)
+
+	if player.hp > 30 then
+		-- light green
+		love.graphics.setColor(129, 199, 132)
+	else
+		love.graphics.setColor(239, 83, 80)
+	end
+
+	love.graphics.rectangle("fill", player.x, player.y - 20, health, 10)
+
+	-- reset colors
+	love.graphics.setColor(255, 255, 255)
 end
 
 hudsprite=love.graphics.newImage('res/img/hud_spritesheet.png')
@@ -240,7 +257,13 @@ function game:draw()
 
     -- draw bullets
     for _, b in pairs(state.bullets) do
-	     love.graphics.rectangle('fill', b.x, b.y, 10, 10)
+	if b.owner.skin == "blue" then
+	    love.graphics.setColor(20, 20, 100)
+	elseif b.owner.skin == "pink" then
+	    love.graphics.setColor(255, 50, 50)
+	end
+	love.graphics.rectangle('fill', b.x, b.y, 10, 10)
+	love.graphics.setColor(255, 255, 255)
     end
 
     cam:unset()
