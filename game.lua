@@ -223,6 +223,8 @@ function drawPlayer(player)
 	     end
 
     end
+
+	love.graphics.print(player.hp, player.x + (player.w / 2), player.y - 20)
 end
 
 function game:draw()
