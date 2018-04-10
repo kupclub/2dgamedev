@@ -90,7 +90,6 @@ function fireGun(player)
 	table.insert(state.bullets, b)
 	player.lastfire = love.timer.getTime()
     end
-
 end
 
 me = newPlayer(0, 0)
@@ -125,7 +124,7 @@ function game:update(dt)
 	b.vy = b.vy + GRAVITY
 	local x, y, cols, _ = map.world:move(b, b.x + b.vx * dt, b.y + b.vy * dt,
 	function(item, other)
-	    if other.type == "player" then
+	    if other.type == "player" and other == item.owner then
 		return nil
 	    end
 	    return "bounce"
