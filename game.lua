@@ -152,35 +152,36 @@ function game:update(dt)
 	b.x = x
 	b.y = y
 
+	for i, col in ipairs(cols) do
+	  local doKill = false
+	  -- the bullet is hitting a wall
+	  if col.type == "bounce" then
+	    col.item.ttl = col.item.ttl - 1
+
+	    if col.item.ttl <= 0 then
+	      doKill = true
+	    end
+
+	    if col.normal.x ~= 0 then
+	      col.item.vx = math.abs(col.item.vx) * col.normal.x
+	    end
+
+	    col.item.vy = math.abs(col.item.vy) * col.normal.y
+
+	  elseif col.type == "touch" then
+	    -- remove the bullet if it hits another player
+	    doKill = true
+	    beholder.trigger("take-damage", col.other)
+	  end
+
+	  if doKill then
+	    map.world:remove(table.remove(state.bullets, i))
+	  end
+	end
+
 	if #state.bullets > MAXBULLETS then
 	    map.world:remove(table.remove(state.bullets, 1))
 	end
-
-	-- ugly HACK - blame charles
-	(function()
-		for i, col in ipairs(cols) do
-			-- the bullet is hitting a wall
-			if col.type == "bounce" then
-				col.item.ttl = col.item.ttl - 1
-
-				if col.item.ttl <= 0 then
-					map.world:remove(table.remove(state.bullets, i))
-					return
-				end
-
-				if col.normal.x ~= 0 then
-					col.item.vx = math.abs(col.item.vx) * col.normal.x
-				end
-
-				col.item.vy = math.abs(col.item.vy) * col.normal.y
-
-			elseif col.type == "touch" then
-				-- remove the bullet if it hits another player
-				map.world:remove(table.remove(state.bullets, i))
-				beholder.trigger("take-damage", col.other)
-			end
-		end
-	end)()
 
     end
 
