@@ -18,12 +18,17 @@ GRAVITY = 9.8
 player_attrs = {
     speed = 180,
     jumpSpeed = 400,
+    skins ={
+      pink=love.graphics.newImage('res/img/p3_spritesheet.png'),
+      green=love.graphics.newImage('res/img/p1_spritesheet.png'),
+      blue=love.graphics.newImage('res/img/p2_spritesheet.png')
+    }
 }
 
 enemy:load()
 map:load()
 
-function newPlayer(x_, y_)
+function newPlayer(x_, y_,skin_)
     local p = {
 	type = "player",
 	x = x_, y = y_,
@@ -31,7 +36,8 @@ function newPlayer(x_, y_)
 	canJump = false,
 	direction = 1,
 	lastfire = 0,
-	w = 70, h = 95
+	w = 70, h = 95,
+  skin=skin_
     }
     table.insert(state.players, p)
     map.world:add(p, p.x, p.y, p.w, p.h)
@@ -92,8 +98,8 @@ function fireGun(player)
     end
 end
 
-me = newPlayer(0, 0)
-me2 = newPlayer(100, 0)
+me = newPlayer(0, 0,"pink")
+me2 = newPlayer(100, 0,"green")
 
 beholder.group(me, function()
     beholder.observe("player1-up", function() jump(me) end)
@@ -160,37 +166,34 @@ function game:update(dt)
     map:update(dt)
 end
 
-player1 = love.graphics.newImage('res/img/p1_spritesheet.png')
-stand=love.graphics.newQuad(0,0,70,95,player1:getDimensions())
-jumpFrame=love.graphics.newQuad(436,92,70,95,player1:getDimensions())
-run1=love.graphics.newQuad(0,92,70,95,player1:getDimensions())
-run2=love.graphics.newQuad(73,98,70,95,player1:getDimensions())
-gun1 = love.graphics.newImage('res/img/gun.png')
+
+stand=love.graphics.newQuad(0,0,70,95,player_attrs.skins["pink"]:getDimensions())
+jumpFrame=love.graphics.newQuad(436,92,70,95,player_attrs.skins["pink"]:getDimensions())
+run1=love.graphics.newQuad(0,92,70,95,player_attrs.skins["pink"]:getDimensions())
+run2=love.graphics.newQuad(73,98,70,95,player_attrs.skins["pink"]:getDimensions())
+
 
 function drawPlayer(player)
+    img=player_attrs.skins[player.skin]
     --love.graphics.rectangle('line', player.x, player.y, player.w, player.h)
     local drawX = player.x
     if player.direction == -1 then
-	drawX = drawX + player.w
+	     drawX = drawX + player.w
     end
     time=love.timer.getTime() * 10
     if player.canJump then
-	if (time % 6) > 3 then
-	    love.graphics.draw(player1, run1, drawX, player.y,0,player.direction,1)
-	else
-	    love.graphics.draw(player1, run2, drawX, player.y,0,player.direction,1)
-	end
+	     if (time % 6) > 3 then
+	        love.graphics.draw(img, run1, drawX, player.y,0,player.direction,1)
+	     else
+	        love.graphics.draw(img, run2, drawX, player.y,0,player.direction,1)
+	     end
     else
-	if (time % 6) > 3 then
-	    love.graphics.draw(player1, jumpFrame, drawX, player.y,0,player.direction,1)
-	else
-	    love.graphics.draw(player1, jumpFrame, drawX, player.y,0,player.direction,1)
-	end
-    end
-    if player.direction == 1 then
-	love.graphics.draw(gun1, drawX+30, player.y+60,0,0.55,0.72)
-    else
-	love.graphics.draw(gun1, drawX-30, player.y+60,0,-0.55,0.72)
+	     if (time % 6) > 3 then
+	        love.graphics.draw(img, jumpFrame, drawX, player.y,0,player.direction,1)
+	     else
+	        love.graphics.draw(img, jumpFrame, drawX, player.y,0,player.direction,1)
+	     end
+
     end
 end
 
