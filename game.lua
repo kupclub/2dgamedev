@@ -101,7 +101,6 @@ end
 
 function takeDamage(player)
 	player.hp = player.hp - 10
-	print(player.hp)
 end
 
 me = newPlayer(0, 0,"pink")
@@ -194,7 +193,6 @@ function game:update(dt)
     map:update(dt)
 end
 
-
 stand=love.graphics.newQuad(0,0,70,95,player_attrs.skins["pink"]:getDimensions())
 jumpFrame=love.graphics.newQuad(436,92,70,95,player_attrs.skins["pink"]:getDimensions())
 run1=love.graphics.newQuad(0,92,70,95,player_attrs.skins["pink"]:getDimensions())
@@ -224,7 +222,19 @@ function drawPlayer(player)
 
     end
 
-	love.graphics.print(player.hp, player.x + (player.w / 2), player.y - 20)
+	health = player.w * (player.hp / 100)
+
+	if player.hp > 30 then
+		-- light green
+		love.graphics.setColor(129, 199, 132)
+	else
+		love.graphics.setColor(239, 83, 80)
+	end
+
+	love.graphics.rectangle("fill", player.x, player.y - 20, health, 10)
+
+	-- reset colors
+	love.graphics.setColor(255, 255, 255)
 end
 
 function game:draw()
