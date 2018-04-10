@@ -38,7 +38,8 @@ function newPlayer(x_, y_,skin_)
 	lastfire = 0,
 	w = 70, h = 95,
   skin=skin_,
-  hp = 100
+  hp = 100,
+  lives = 4
     }
     table.insert(state.players, p)
     map.world:add(p, p.x, p.y, p.w, p.h)
@@ -220,6 +221,11 @@ function drawPlayer(player)
     end
 end
 
+hudsprite=love.graphics.newImage('res/img/hud_spritesheet.png')
+hart=love.graphics.newQuad(0,92,52,49,hudsprite:getDimensions())
+pinkFace=love.graphics.newQuad(97,97,52,49,hudsprite:getDimensions())
+greenFace=love.graphics.newQuad(0,140,48,49,hudsprite:getDimensions())
+
 function game:draw()
     cam:follow(me)
 
@@ -234,10 +240,29 @@ function game:draw()
 
     -- draw bullets
     for _, b in pairs(state.bullets) do
-	love.graphics.rectangle('fill', b.x, b.y, 10, 10)
+	     love.graphics.rectangle('fill', b.x, b.y, 10, 10)
     end
 
     cam:unset()
+
+    numLives(10,10,"pink",4)
+    numLives(love.graphics.getWidth()-148,10,"green",4)
+
+
+end
+
+function numLives(x,y,avatar,lives)
+  if avatar=="pink" then
+    love.graphics.draw(hudsprite, pinkFace, x, y,0,0.5,0.5)
+  else
+    if avatar == "green" then
+        love.graphics.draw(hudsprite, greenFace, x, y,0,0.5,0.5)
+    end
+  end
+
+  for i = 1, lives do
+    love.graphics.draw(hudsprite, hart, x + (i * (52/2)), y,0,0.5,0.5)
+  end
 end
 
 return game
