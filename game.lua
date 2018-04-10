@@ -241,7 +241,13 @@ function game:draw()
 
     -- draw bullets
     for _, b in pairs(state.bullets) do
+	if b.owner.skin == "blue" then
+	    love.graphics.setColor(20, 20, 100)
+	elseif b.owner.skin == "pink" then
+	    love.graphics.setColor(255, 50, 50)
+	end
 	love.graphics.rectangle('fill', b.x, b.y, 10, 10)
+	love.graphics.setColor(255, 255, 255)
     end
 
     cam:unset()
