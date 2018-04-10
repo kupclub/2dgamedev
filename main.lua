@@ -51,23 +51,43 @@ function love.update(dt)
     end
 
     if love.keyboard.isDown("left") then
-        beholder.trigger("control-left")
+        beholder.trigger("player1-left")
     end
 
     if love.keyboard.isDown("right") then
-        beholder.trigger("control-right")
+        beholder.trigger("player1-right")
     end
 
     if love.keyboard.isDown("up") then
-        beholder.trigger("control-up")
+        beholder.trigger("player1-up")
     end
 
     if love.keyboard.isDown("down") then
-        beholder.trigger("control-down")
+        beholder.trigger("player1-down")
     end
 
     if love.keyboard.isDown("space") then
-        beholder.trigger("control-fire")
+        beholder.trigger("player1-fire")
+    end
+
+    if love.keyboard.isDown("a") then
+        beholder.trigger("player2-left")
+    end
+
+    if love.keyboard.isDown("d") then
+        beholder.trigger("player2-right")
+    end
+
+    if love.keyboard.isDown("w") then
+        beholder.trigger("player2-up")
+    end
+
+    if love.keyboard.isDown("s") then
+        beholder.trigger("player2-down")
+    end
+
+    if love.keyboard.isDown("f") then
+        beholder.trigger("player2-fire")
     end
 
     if love.keyboard.isDown("f8") then
