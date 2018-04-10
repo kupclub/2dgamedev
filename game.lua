@@ -175,7 +175,12 @@ function game:update(dt)
 	  end
 
 	  if doKill then
-	    map.world:remove(table.remove(state.bullets, i))
+	    local n = table.remove(state.bullets, i)
+	    if n then
+	      map.world:remove(n)
+	    else
+	      print("RERRRRRR CHARLES ITS HAPPENING AGINNNNN")
+	    end
 	  end
 	end
 
