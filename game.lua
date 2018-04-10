@@ -31,7 +31,8 @@ function newPlayer(x_, y_)
 	canJump = false,
 	direction = 1,
 	lastfire = 0,
-	w = 70, h = 95
+	w = 70, h = 95,
+	hp = 100
     }
     table.insert(state.players, p)
     map.world:add(p, p.x, p.y, p.w, p.h)
@@ -92,6 +93,11 @@ function fireGun(player)
     end
 end
 
+function takeDamage(player)
+	player.hp = player.hp - 10
+	print(player.hp)
+end
+
 me = newPlayer(0, 0)
 me2 = newPlayer(100, 0)
 
@@ -111,6 +117,8 @@ beholder.group(me2, function()
     beholder.observe("player2-fire", function() fireGun(me2) end)
 end)
 
+beholder.observe("take-damage", function(player) takeDamage(player) end)
+
 local foo = enemy:new("slime", 200,150)
 map.world:add(enemy.stack[foo], enemy.stack[foo].x,enemy.stack[foo].y, 52,28)
 
@@ -125,8 +133,13 @@ function game:update(dt)
 	local x, y, cols, _ = map.world:move(b, b.x + b.vx * dt, b.y + b.vy * dt,
 	function(item, other)
 	    if other.type == "player" and other == item.owner then
-		return nil
+			return nil
 	    end
+
+		if other.type == "player" and other ~= item.owner then
+			return "touch"
+		end
+
 	    return "bounce"
 	end)
 
@@ -151,7 +164,12 @@ function game:update(dt)
 		end
 
 		col.item.vy = math.abs(col.item.vy) * col.normal.y
-	    end
+	    
+		elseif col.type == "touch" then
+			-- remove the bullet if it hits another player
+			map.world:remove(table.remove(state.bullets, i))
+			beholder.trigger("take-damage", col.other)
+		end
 	end
 
     end
