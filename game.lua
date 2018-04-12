@@ -102,6 +102,12 @@ end
 
 function takeDamage(player)
 	player.hp = player.hp - 10
+	
+	-- death state
+	if player.hp <= 0 then
+		player.hp = 100
+		player.lives = player.lives - 1
+	end
 end
 
 me = newPlayer(0, 0,"pink")
@@ -268,10 +274,8 @@ function game:draw()
 
     cam:unset()
 
-    numLives(10,10,"pink",4)
-    numLives(love.graphics.getWidth()-148,10,"green",4)
-
-
+    numLives(10,10,"pink",state.players[1].lives)
+    numLives(love.graphics.getWidth()-148,10,"green",state.players[2].lives)
 end
 
 function numLives(x,y,avatar,lives)
