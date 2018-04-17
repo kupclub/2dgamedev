@@ -153,13 +153,13 @@ function game:update(dt)
 	b.y = y
 
 	for i, col in ipairs(cols) do
-	  local doKill = false
+	  local shouldKillBulet = false
 	  -- the bullet is hitting a wall
 	  if col.type == "bounce" then
 	    col.item.ttl = col.item.ttl - 1
 
 	    if col.item.ttl <= 0 then
-	      doKill = true
+	      shouldKillBulet = true
 	    end
 
 	    if col.normal.x ~= 0 then
@@ -170,11 +170,11 @@ function game:update(dt)
 
 	  elseif col.type == "touch" then
 	    -- remove the bullet if it hits another player
-	    doKill = true
+	    shouldKillBullet = true
 	    beholder.trigger("take-damage", col.other)
 	  end
 
-	  if doKill then
+	  if shouldKillBullet then
 	    local n = table.remove(state.bullets, i)
 	    if n then
 	      map.world:remove(n)
@@ -228,7 +228,7 @@ function drawPlayer(player)
 end
 
 function game:draw()
-    cam:follow(me)
+    cam:follow(me, me2)
 
     -- start the camera
     cam:set()
