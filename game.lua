@@ -215,11 +215,19 @@ function drawPlayer(player)
     end
     time=love.timer.getTime() * 10
     if player.canJump then
-	     if (time % 6) > 3 then
-	        love.graphics.draw(img, run1, drawX, player.y,0,player.direction,1)
-	     else
-	        love.graphics.draw(img, run2, drawX, player.y,0,player.direction,1)
-	     end
+      if player.vx ~= 0 then
+         if (time % 6) > 3 then
+  	        love.graphics.draw(img, run1, drawX, player.y,0,player.direction,1)
+  	     else
+  	        love.graphics.draw(img, run2, drawX, player.y,0,player.direction,1)
+  	     end
+      else
+        if (time % 6) > 3 then
+           love.graphics.draw(img, stand, drawX, player.y,0,player.direction,1)
+        else
+           love.graphics.draw(img, stand, drawX, player.y,0,player.direction,1)
+        end
+      end
     else
 	     if (time % 6) > 3 then
 	        love.graphics.draw(img, jumpFrame, drawX, player.y,0,player.direction,1)
@@ -247,8 +255,12 @@ end
 hudsprite=love.graphics.newImage('res/img/hud_spritesheet.png')
 hart=love.graphics.newQuad(0,92,52,49,hudsprite:getDimensions())
 hartless=love.graphics.newQuad(0,45,52,49,hudsprite:getDimensions())
-pinkFace=love.graphics.newQuad(97,97,52,49,hudsprite:getDimensions())
-greenFace=love.graphics.newQuad(0,140,48,49,hudsprite:getDimensions())
+faces={
+  pink =love.graphics.newQuad(97,97,52,49,hudsprite:getDimensions()),
+  green =love.graphics.newQuad(0,140,48,49,hudsprite:getDimensions()),
+  blue =love.graphics.newQuad(0,189,48,49,hudsprite:getDimensions())
+}
+
 
 function game:draw()
     cam:follow(me)
@@ -280,13 +292,7 @@ function game:draw()
 end
 
 function numLives(x,y,avatar,lives)
-  if avatar=="pink" then
-    love.graphics.draw(hudsprite, pinkFace, x, y,0,0.5,0.5)
-  else
-    if avatar == "green" then
-        love.graphics.draw(hudsprite, greenFace, x, y,0,0.5,0.5)
-    end
-  end
+  love.graphics.draw(hudsprite, faces[avatar], x, y,0,0.5,0.5)
 
   for i = 1, 4 do
     if i<=lives then
