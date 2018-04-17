@@ -228,10 +228,11 @@ stand=love.graphics.newQuad(0,0,70,95,player_attrs.skins["pink"]:getDimensions()
 jumpFrame=love.graphics.newQuad(436,92,70,95,player_attrs.skins["pink"]:getDimensions())
 run1=love.graphics.newQuad(0,95,70,95,player_attrs.skins["pink"]:getDimensions())
 run2=love.graphics.newQuad(73,98,70,95,player_attrs.skins["pink"]:getDimensions())
+deadplayer=love.graphics.newImage('res/img/skeleton.png')
 
 function drawDeadPlayer(player)
   -- TODO(chris) add tombstone for this
-  love.graphics.rectangle('fill', player.x, player.y, player.w, player.h)
+  love.graphics.draw(deadplayer, player.x, player.y)
 end
 
 function drawPlayer(player)
