@@ -38,7 +38,8 @@ function newPlayer(x_, y_,skin_)
 	lastfire = 0,
 	w = 70, h = 95,
   skin=skin_,
-  hp = 100
+  hp = 100,
+  lives = 4
     }
     table.insert(state.players, p)
     map.world:add(p, p.x, p.y, p.w, p.h)
@@ -99,9 +100,17 @@ function fireGun(player)
     end
 end
 
+hit = love.audio.newSource("res/sound/hit.mp3", "static")
+
 function takeDamage(player)
 	player.hp = player.hp - 10
-	print(player.hp)
+  hit:rewind()
+  hit:play()
+	-- death state
+	if player.hp <= 0 then
+		player.hp = 100
+		player.lives = player.lives - 1
+	end
 end
 
 me = newPlayer(0, 0,"pink")
@@ -194,10 +203,9 @@ function game:update(dt)
     map:update(dt)
 end
 
-
 stand=love.graphics.newQuad(0,0,70,95,player_attrs.skins["pink"]:getDimensions())
 jumpFrame=love.graphics.newQuad(436,92,70,95,player_attrs.skins["pink"]:getDimensions())
-run1=love.graphics.newQuad(0,92,70,95,player_attrs.skins["pink"]:getDimensions())
+run1=love.graphics.newQuad(0,95,70,95,player_attrs.skins["pink"]:getDimensions())
 run2=love.graphics.newQuad(73,98,70,95,player_attrs.skins["pink"]:getDimensions())
 
 
@@ -210,11 +218,19 @@ function drawPlayer(player)
     end
     time=love.timer.getTime() * 10
     if player.canJump then
-	     if (time % 6) > 3 then
-	        love.graphics.draw(img, run1, drawX, player.y,0,player.direction,1)
-	     else
-	        love.graphics.draw(img, run2, drawX, player.y,0,player.direction,1)
-	     end
+      if player.vx ~= 0 then
+         if (time % 6) > 3 then
+  	        love.graphics.draw(img, run1, drawX, player.y,0,player.direction,1)
+  	     else
+  	        love.graphics.draw(img, run2, drawX, player.y,0,player.direction,1)
+  	     end
+      else
+        if (time % 6) > 3 then
+           love.graphics.draw(img, stand, drawX, player.y,0,player.direction,1)
+        else
+           love.graphics.draw(img, stand, drawX, player.y,0,player.direction,1)
+        end
+      end
     else
 	     if (time % 6) > 3 then
 	        love.graphics.draw(img, jumpFrame, drawX, player.y,0,player.direction,1)
@@ -224,8 +240,30 @@ function drawPlayer(player)
 
     end
 
-	love.graphics.print(player.hp, player.x + (player.w / 2), player.y - 20)
+	health = player.w * (player.hp / 100)
+
+	if player.hp > 30 then
+		-- light green
+		love.graphics.setColor(129, 199, 132)
+	else
+		love.graphics.setColor(239, 83, 80)
+	end
+
+	love.graphics.rectangle("fill", player.x, player.y - 20, health, 10)
+
+	-- reset colors
+	love.graphics.setColor(255, 255, 255)
 end
+
+hudsprite=love.graphics.newImage('res/img/hud_spritesheet.png')
+hart=love.graphics.newQuad(0,92,52,49,hudsprite:getDimensions())
+hartless=love.graphics.newQuad(0,45,52,49,hudsprite:getDimensions())
+faces={
+  pink =love.graphics.newQuad(97,97,52,49,hudsprite:getDimensions()),
+  green =love.graphics.newQuad(0,140,48,49,hudsprite:getDimensions()),
+  blue =love.graphics.newQuad(0,189,48,49,hudsprite:getDimensions())
+}
+
 
 function game:draw()
     cam:follow(me, me2)
@@ -251,6 +289,22 @@ function game:draw()
     end
 
     cam:unset()
+
+    numLives(10,10,"pink",state.players[1].lives)
+    numLives(love.graphics.getWidth()-148,10,"green",state.players[2].lives)
+end
+
+function numLives(x,y,avatar,lives)
+  love.graphics.draw(hudsprite, faces[avatar], x, y,0,0.5,0.5)
+
+  for i = 1, 4 do
+    if i<=lives then
+      img = hart
+    else
+      img= hartless
+    end
+    love.graphics.draw(hudsprite, img, x + (i * (52/2)), y,0,0.5,0.5)
+  end
 end
 
 return game
