@@ -246,6 +246,7 @@ end
 
 hudsprite=love.graphics.newImage('res/img/hud_spritesheet.png')
 hart=love.graphics.newQuad(0,92,52,49,hudsprite:getDimensions())
+hartless=love.graphics.newQuad(0,45,52,49,hudsprite:getDimensions())
 pinkFace=love.graphics.newQuad(97,97,52,49,hudsprite:getDimensions())
 greenFace=love.graphics.newQuad(0,140,48,49,hudsprite:getDimensions())
 
@@ -287,8 +288,13 @@ function numLives(x,y,avatar,lives)
     end
   end
 
-  for i = 1, lives do
-    love.graphics.draw(hudsprite, hart, x + (i * (52/2)), y,0,0.5,0.5)
+  for i = 1, 4 do
+    if i<=lives then
+      img = hart
+    else
+      img= hartless
+    end
+    love.graphics.draw(hudsprite, img, x + (i * (52/2)), y,0,0.5,0.5)
   end
 end
 
