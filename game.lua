@@ -83,6 +83,8 @@ function updatePlayer(dt, player)
     player.vx = 0
 end
 
+fire = love.audio.newSource("res/sound/shoot.ogg", "static")
+
 
 function fireGun(player)
     if love.timer.getTime() - player.lastfire > FIRETIME then
@@ -96,6 +98,8 @@ function fireGun(player)
 	    ttl = 3
 	}
 	map.world:add(b, b.x, b.y, 10, 10)
+  fire:rewind()
+  fire:play()
 	table.insert(state.bullets, b)
 	player.lastfire = love.timer.getTime()
     end
@@ -130,8 +134,8 @@ function takeDamage(player)
 	end
 end
 
-me = newPlayer(0, 0,"pink")
-me2 = newPlayer(100, 0,"green")
+me = newPlayer(3500, 0,"pink")
+me2 = newPlayer(3600, 0,"green")
 
 beholder.group(me, function()
     beholder.observe("player1-up", function() jump(me) end)
