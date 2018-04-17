@@ -162,13 +162,13 @@ function game:update(dt)
 	b.y = y
 
 	for i, col in ipairs(cols) do
-	  local shouldKillBulet = false
+	  local shouldKillBullet = false
 	  -- the bullet is hitting a wall
 	  if col.type == "bounce" then
 	    col.item.ttl = col.item.ttl - 1
 
 	    if col.item.ttl <= 0 then
-	      shouldKillBulet = true
+	      shouldKillBullet = true
 	    end
 
 	    if col.normal.x ~= 0 then
