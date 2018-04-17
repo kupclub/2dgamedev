@@ -6,7 +6,8 @@ net = require 'net'
 local game = {}
 
 local state = {
-    players = {},
+    livePlayers = {},
+    deadPlayers = {},
     bullets = {}
 }
 
@@ -41,7 +42,7 @@ function newPlayer(x_, y_,skin_)
   hp = 100,
   lives = 4
     }
-    table.insert(state.players, p)
+    table.insert(state.livePlayers, p)
     map.world:add(p, p.x, p.y, p.w, p.h)
     return p
 end
@@ -102,6 +103,19 @@ end
 
 hit = love.audio.newSource("res/sound/hit.mp3", "static")
 
+function killPlayer(player)
+  local ii = 0
+  for i, p in ipairs(state.livePlayers) do
+    if p == player then
+      ii = i
+      break
+    end
+  end
+  map.world:remove(player)
+  table.remove(state.livePlayers, i)
+  table.insert(state.deadPlayers, player)
+end
+
 function takeDamage(player)
 	player.hp = player.hp - 10
   hit:rewind()
@@ -110,6 +124,9 @@ function takeDamage(player)
 	if player.hp <= 0 then
 		player.hp = 100
 		player.lives = player.lives - 1
+	end
+	if player.lives <= 0 then
+	  killPlayer(player)
 	end
 end
 
@@ -141,7 +158,7 @@ function game:load()
 end
 
 function game:update(dt)
-    fun.each(function(p) updatePlayer(dt, p) end, state.players)
+    fun.each(function(p) updatePlayer(dt, p) end, state.livePlayers)
 
     for i, b in ipairs(state.bullets) do
 	b.vy = b.vy + GRAVITY
@@ -208,6 +225,10 @@ jumpFrame=love.graphics.newQuad(436,92,70,95,player_attrs.skins["pink"]:getDimen
 run1=love.graphics.newQuad(0,95,70,95,player_attrs.skins["pink"]:getDimensions())
 run2=love.graphics.newQuad(73,98,70,95,player_attrs.skins["pink"]:getDimensions())
 
+function drawDeadPlayer(player)
+  -- TODO(chris) add tombstone for this
+  love.graphics.rectangle('fill', player.x, player.y, player.w, player.h)
+end
 
 function drawPlayer(player)
     img=player_attrs.skins[player.skin]
@@ -273,7 +294,8 @@ function game:draw()
 
     map:draw()
 
-    fun.each(drawPlayer, state.players)
+    fun.each(drawPlayer, state.livePlayers)
+    fun.each(drawDeadPlayer, state.deadPlayers)
 
     enemy:draw()
 
@@ -290,8 +312,10 @@ function game:draw()
 
     cam:unset()
 
-    numLives(10,10,"pink",state.players[1].lives)
-    numLives(love.graphics.getWidth()-148,10,"green",state.players[2].lives)
+    for i = 1, #state.livePlayers do
+      local p = state.livePlayers[i]
+      numLives(10,30 * i, p.skin,p.lives)
+    end
 end
 
 function numLives(x,y,avatar,lives)
