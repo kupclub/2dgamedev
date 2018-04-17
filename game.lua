@@ -98,7 +98,7 @@ function fireGun(player)
 	    ttl = 3
 	}
 	map.world:add(b, b.x, b.y, 10, 10)
-  fire:rewind()
+  fire:seek(0)
   fire:play()
 	table.insert(state.bullets, b)
 	player.lastfire = love.timer.getTime()
@@ -122,7 +122,7 @@ end
 
 function takeDamage(player)
 	player.hp = player.hp - 10
-  hit:rewind()
+  hit:seek(0)
   hit:play()
 	-- death state
 	if player.hp <= 0 then
@@ -270,9 +270,9 @@ function drawPlayer(player)
 
 	if player.hp > 30 then
 		-- light green
-		love.graphics.setColor(129, 199, 132)
+		love.graphics.setColor(129/255, 199/255, 132/255)
 	else
-		love.graphics.setColor(239, 83, 80)
+		love.graphics.setColor(239/255, 83/255, 80/255)
 	end
 
 	love.graphics.rectangle("fill", player.x, player.y - 20, health, 10)
