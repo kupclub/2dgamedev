@@ -102,7 +102,7 @@ end
 
 function takeDamage(player)
 	player.hp = player.hp - 10
-	
+
 	-- death state
 	if player.hp <= 0 then
 		player.hp = 100
@@ -202,7 +202,7 @@ end
 
 stand=love.graphics.newQuad(0,0,70,95,player_attrs.skins["pink"]:getDimensions())
 jumpFrame=love.graphics.newQuad(436,92,70,95,player_attrs.skins["pink"]:getDimensions())
-run1=love.graphics.newQuad(0,92,70,95,player_attrs.skins["pink"]:getDimensions())
+run1=love.graphics.newQuad(0,95,70,95,player_attrs.skins["pink"]:getDimensions())
 run2=love.graphics.newQuad(73,98,70,95,player_attrs.skins["pink"]:getDimensions())
 
 
