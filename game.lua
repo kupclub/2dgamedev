@@ -100,9 +100,12 @@ function fireGun(player)
     end
 end
 
+hit = love.audio.newSource("res/sound/hit.mp3", "static")
+
 function takeDamage(player)
 	player.hp = player.hp - 10
-
+  hit:rewind()
+  hit:play()
 	-- death state
 	if player.hp <= 0 then
 		player.hp = 100
