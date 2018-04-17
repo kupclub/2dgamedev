@@ -90,6 +90,10 @@ function love.update(dt)
         beholder.trigger("player2-fire")
     end
 
+	if love.keyboard.isDown("return") then
+		beholder.trigger("restart-game")
+	end
+
     if love.keyboard.isDown("f8") then
         debug.debug()
     end

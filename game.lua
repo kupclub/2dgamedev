@@ -3,6 +3,8 @@ map = require 'map'
 enemy = require 'enemy'
 net = require 'net'
 
+local regFont = love.graphics.newFont("fonts/Berkshire_Swash/BerkshireSwash-Regular.ttf", 24)
+
 local game = {}
 
 local state = {
@@ -130,6 +132,7 @@ beholder.group(me2, function()
 end)
 
 beholder.observe("take-damage", function(player) takeDamage(player) end)
+beholder.observe("restart-game", function() restartGame() end)
 
 local foo = enemy:new("slime", 200,150)
 map.world:add(enemy.stack[foo], enemy.stack[foo].x,enemy.stack[foo].y, 52,28)
@@ -289,6 +292,12 @@ function game:draw()
 
     numLives(10,10,"pink",state.players[1].lives)
     numLives(love.graphics.getWidth()-148,10,"green",state.players[2].lives)
+
+	if state.players[1].lives == 0 then
+		drawEndGame(1)
+	elseif state.players[2].lives == 0 then
+		drawEndGame(2)
+	end
 end
 
 function numLives(x,y,avatar,lives)
@@ -302,6 +311,41 @@ function numLives(x,y,avatar,lives)
     end
     love.graphics.draw(hudsprite, img, x + (i * (52/2)), y,0,0.5,0.5)
   end
+end
+
+function drawEndGame(playerNumber)
+	screenWidth = love.graphics.getWidth()
+	screenHeight = love.graphics.getHeight()
+	love.graphics.setColor(244, 67, 54, 200)
+	love.graphics.rectangle("fill", 0, 0, screenWidth, screenHeight)
+	
+	-- reset the color
+	love.graphics.setColor(255, 255, 255)
+	
+	-- set the font
+	love.graphics.setFont(regFont)
+
+	msg = "Player " .. playerNumber .. " wins!"
+	directions = "Press enter to play again"
+	msgWidth = regFont:getWidth(msg)
+	dirWidth = regFont:getWidth(directions)
+	love.graphics.printf(msg, screenWidth/2 - msgWidth/2, screenHeight/2, msgWidth, "center")
+	love.graphics.printf(directions, screenWidth/2 - dirWidth/2, screenHeight/2 + 100, dirWidth, "center")
+end
+
+function restartGame()
+	if state.players[1].lives == 0 or state.players[2].lives == 0 then 
+		me.x = 0
+		me.y = 0
+
+		me2.x = 100
+		me2.y = 0
+
+		for i = 1, #state.players do
+			state.players[i].lives = 4
+			state.players[i].hp = 100
+		end
+	end
 end
 
 return game
