@@ -8,7 +8,8 @@ local regFont = love.graphics.newFont("fonts/Berkshire_Swash/BerkshireSwash-Regu
 local game = {}
 
 local state = {
-    players = {},
+    livePlayers = {},
+    deadPlayers = {},
     bullets = {}
 }
 
@@ -30,7 +31,7 @@ player_attrs = {
 enemy:load()
 map:load()
 
-function newPlayer(x_, y_,skin_)
+function newPlayer(x_, y_, skin_, name_)
     local p = {
 	type = "player",
 	x = x_, y = y_,
@@ -39,11 +40,12 @@ function newPlayer(x_, y_,skin_)
 	direction = 1,
 	lastfire = 0,
 	w = 70, h = 95,
-  skin=skin_,
-  hp = 100,
-  lives = 4
+  	skin=skin_,
+  	hp = 100,
+  	lives = 4,
+	name=name_
     }
-    table.insert(state.players, p)
+    table.insert(state.livePlayers, p)
     map.world:add(p, p.x, p.y, p.w, p.h)
     return p
 end
@@ -84,6 +86,8 @@ function updatePlayer(dt, player)
     player.vx = 0
 end
 
+fire = love.audio.newSource("res/sound/shoot.ogg", "static")
+
 
 function fireGun(player)
     if love.timer.getTime() - player.lastfire > FIRETIME then
@@ -97,23 +101,44 @@ function fireGun(player)
 	    ttl = 3
 	}
 	map.world:add(b, b.x, b.y, 10, 10)
+  fire:rewind()
+  fire:play()
 	table.insert(state.bullets, b)
 	player.lastfire = love.timer.getTime()
     end
 end
 
+hit = love.audio.newSource("res/sound/hit.mp3", "static")
+
+function killPlayer(player)
+  local ii = 0
+  for i, p in ipairs(state.livePlayers) do
+    if p == player then
+      ii = i
+      break
+    end
+  end
+  map.world:remove(player)
+  table.remove(state.livePlayers, i)
+  table.insert(state.deadPlayers, player)
+end
+
 function takeDamage(player)
 	player.hp = player.hp - 10
-
+  hit:rewind()
+  hit:play()
 	-- death state
 	if player.hp <= 0 then
 		player.hp = 100
 		player.lives = player.lives - 1
 	end
+	if player.lives <= 0 then
+	  killPlayer(player)
+	end
 end
 
-me = newPlayer(0, 0,"pink")
-me2 = newPlayer(100, 0,"green")
+me = newPlayer(3500, 0,"pink", "Charles")
+me2 = newPlayer(3600, 0,"green", "Aaron")
 
 beholder.group(me, function()
     beholder.observe("player1-up", function() jump(me) end)
@@ -141,7 +166,7 @@ function game:load()
 end
 
 function game:update(dt)
-    fun.each(function(p) updatePlayer(dt, p) end, state.players)
+    fun.each(function(p) updatePlayer(dt, p) end, state.livePlayers)
 
     for i, b in ipairs(state.bullets) do
 	b.vy = b.vy + GRAVITY
@@ -162,13 +187,13 @@ function game:update(dt)
 	b.y = y
 
 	for i, col in ipairs(cols) do
-	  local doKill = false
+	  local shouldKillBullet = false
 	  -- the bullet is hitting a wall
 	  if col.type == "bounce" then
 	    col.item.ttl = col.item.ttl - 1
 
 	    if col.item.ttl <= 0 then
-	      doKill = true
+	      shouldKillBullet = true
 	    end
 
 	    if col.normal.x ~= 0 then
@@ -179,11 +204,11 @@ function game:update(dt)
 
 	  elseif col.type == "touch" then
 	    -- remove the bullet if it hits another player
-	    doKill = true
+	    shouldKillBullet = true
 	    beholder.trigger("take-damage", col.other)
 	  end
 
-	  if doKill then
+	  if shouldKillBullet then
 	    local n = table.remove(state.bullets, i)
 	    if n then
 	      map.world:remove(n)
@@ -208,6 +233,10 @@ jumpFrame=love.graphics.newQuad(436,92,70,95,player_attrs.skins["pink"]:getDimen
 run1=love.graphics.newQuad(0,95,70,95,player_attrs.skins["pink"]:getDimensions())
 run2=love.graphics.newQuad(73,98,70,95,player_attrs.skins["pink"]:getDimensions())
 
+function drawDeadPlayer(player)
+  -- TODO(chris) add tombstone for this
+  love.graphics.rectangle('fill', player.x, player.y, player.w, player.h)
+end
 
 function drawPlayer(player)
     img=player_attrs.skins[player.skin]
@@ -266,14 +295,15 @@ faces={
 
 
 function game:draw()
-    cam:follow(me)
+    cam:follow(me, me2)
 
     -- start the camera
     cam:set()
 
     map:draw()
 
-    fun.each(drawPlayer, state.players)
+    fun.each(drawPlayer, state.livePlayers)
+    fun.each(drawDeadPlayer, state.deadPlayers)
 
     enemy:draw()
 
@@ -289,15 +319,15 @@ function game:draw()
     end
 
     cam:unset()
-
-    numLives(10,10,"pink",state.players[1].lives)
-    numLives(love.graphics.getWidth()-148,10,"green",state.players[2].lives)
-
-	if state.players[1].lives == 0 then
-		drawEndGame(1)
-	elseif state.players[2].lives == 0 then
-		drawEndGame(2)
+	
+	if #state.livePlayers <= 1 then
+		drawEndGame(state.livePlayers[1].name)
 	end
+
+    for i = 1, #state.livePlayers do
+      local p = state.livePlayers[i]
+      numLives(10,30 * i, p.skin,p.lives)
+    end
 end
 
 function numLives(x,y,avatar,lives)
@@ -313,7 +343,7 @@ function numLives(x,y,avatar,lives)
   end
 end
 
-function drawEndGame(playerNumber)
+function drawEndGame(playerName)
 	screenWidth = love.graphics.getWidth()
 	screenHeight = love.graphics.getHeight()
 	love.graphics.setColor(244, 67, 54, 200)
@@ -325,7 +355,7 @@ function drawEndGame(playerNumber)
 	-- set the font
 	love.graphics.setFont(regFont)
 
-	msg = "Player " .. playerNumber .. " wins!"
+	msg = "Player " .. playerName .. " wins!"
 	directions = "Press enter to play again"
 	msgWidth = regFont:getWidth(msg)
 	dirWidth = regFont:getWidth(directions)
@@ -334,16 +364,25 @@ function drawEndGame(playerNumber)
 end
 
 function restartGame()
-	if state.players[1].lives == 0 or state.players[2].lives == 0 then 
-		me.x = 0
+	if #state.livePlayers <= 1 then 
+		me.x = 3500
 		me.y = 0
 
-		me2.x = 100
+		me2.x = 3600
 		me2.y = 0
 
-		for i = 1, #state.players do
-			state.players[i].lives = 4
-			state.players[i].hp = 100
+		for i = 1, #state.deadPlayers do
+			p = state.deadPlayers[i]
+			table.insert(state.livePlayers, state.deadPlayers[i])
+    		map.world:add(p, p.x, p.y, p.w, p.h)
+		end
+
+		state.deadPlayers = {}
+
+		-- reset live players
+		for i = 1, #state.livePlayers do
+			state.livePlayers[i].lives = 4
+			state.livePlayers[i].hp = 100
 		end
 	end
 end
