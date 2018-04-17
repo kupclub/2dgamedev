@@ -82,7 +82,7 @@ function updatePlayer(dt, player)
     player.vx = 0
 end
 
---fire = love.audio.newSource("res/sound/shoot.wav", "static")
+fire = love.audio.newSource("res/sound/shoot.ogg", "static")
 
 
 function fireGun(player)
