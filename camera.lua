@@ -1,3 +1,4 @@
+vec = require "libs.brinevector"
 function clamp(low, n, high) return math.min(math.max(low, n), high) end
 
 local camera = {}
@@ -45,18 +46,27 @@ end
 
 local cameraPadding = 175
 
-function camera:follow(o)
-    if type(o) ~= "table" then
+function camera:follow(a, b)
+    if type(a) ~= "table" then
       error("expected to follow a table object")
     end
-    local tx = o.x + o.w / 2
-    local ty = o.y - o.h / 2
-    if tx < self.x + cameraPadding then
-        self.x = tx - cameraPadding
-    elseif tx > self.x + love.graphics.getWidth() - cameraPadding then
-        self.x = tx - love.graphics.getWidth() + cameraPadding
-    end
-    self.y = ty - love.graphics.getHeight() / 2
+
+    local av = vec(a.x + a.w / 2, a.y - a.h / 2)
+    local bv = vec(b.x + b.w / 2, b.y - b.h / 2)
+    local t = av - bv
+
+    local x = math.min(av.x, bv.x) - cameraPadding / 2
+    local y = math.min(av.y, bv.y) - cameraPadding / 2
+
+    local w = math.abs(t.x) + cameraPadding
+    local h = math.abs(t.y) + cameraPadding
+
+    local s = math.max(w / love.graphics.getWidth(), h / love.graphics.getHeight(), 1)
+
+    self.x = x
+    self.y = y
+    self.scaleX = s
+    self.scaleY = s
 end
 
 return camera
