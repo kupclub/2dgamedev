@@ -5,10 +5,10 @@ local map = {}
 
 function map:load()
 	map.maps = {
-		test = sti("res/test.lua", {"bump"})
+		hyrule = sti("data/maps/hyrule.lua", {"bump"}),
 	}
 
-	map.cur = map.maps.test --Current map
+	map.cur = map.maps.hyrule --Current map
 
 	map.world = bump.newWorld()
 
@@ -21,7 +21,7 @@ function map:update(dt)
 end
 
 function map:draw()
-	love.graphics.setBackgroundColor(135, 206, 235) --sky blue
+	love.graphics.setBackgroundColor(135/255, 206/255, 235/255) --sky blue
 	map.cur:draw()
 	map.cur:bump_draw(map.world)
 end

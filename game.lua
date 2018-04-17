@@ -117,8 +117,8 @@ function takeDamage(player)
 	end
 end
 
-me = newPlayer(0, 0,"pink")
-me2 = newPlayer(100, 0,"green")
+me = newPlayer(3500, 0,"pink")
+me2 = newPlayer(3600, 0,"green")
 
 beholder.group(me, function()
     beholder.observe("player1-up", function() jump(me) end)
