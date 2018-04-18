@@ -3,6 +3,8 @@ map = require 'map'
 enemy = require 'enemy'
 net = require 'net'
 
+local regFont = love.graphics.newFont("fonts/Berkshire_Swash/BerkshireSwash-Regular.ttf", 24)
+
 local game = {}
 
 local state = {
@@ -29,7 +31,7 @@ player_attrs = {
 enemy:load()
 map:load()
 
-function newPlayer(x_, y_,skin_)
+function newPlayer(x_, y_, skin_, name_)
     local p = {
 	type = "player",
 	x = x_, y = y_,
@@ -38,9 +40,10 @@ function newPlayer(x_, y_,skin_)
 	direction = 1,
 	lastfire = 0,
 	w = 70, h = 95,
-  skin=skin_,
-  hp = 100,
-  lives = 4
+  	skin=skin_,
+  	hp = 100,
+  	lives = 4,
+	name=name_
     }
     table.insert(state.livePlayers, p)
     map.world:add(p, p.x, p.y, p.w, p.h)
@@ -133,8 +136,8 @@ function takeDamage(player)
 	end
 end
 
-me = newPlayer(3500, 0,"pink")
-me2 = newPlayer(3600, 0,"green")
+me = newPlayer(3500, 0,"pink", "Charles")
+me2 = newPlayer(3600, 0,"green", "Aaron")
 
 beholder.group(me, function()
     beholder.observe("player1-up", function() jump(me) end)
@@ -153,6 +156,7 @@ beholder.group(me2, function()
 end)
 
 beholder.observe("take-damage", function(player) takeDamage(player) end)
+beholder.observe("restart-game", function() restartGame() end)
 
 local foo = enemy:new("slime", 200,150)
 map.world:add(enemy.stack[foo], enemy.stack[foo].x,enemy.stack[foo].y, 52,28)
@@ -315,6 +319,10 @@ function game:draw()
     end
 
     cam:unset()
+	
+	if #state.livePlayers <= 1 then
+		drawEndGame(state.livePlayers[1].name)
+	end
 
     for i = 1, #state.livePlayers do
       local p = state.livePlayers[i]
@@ -333,6 +341,50 @@ function numLives(x,y,avatar,lives)
     end
     love.graphics.draw(hudsprite, img, x + (i * (52/2)), y,0,0.5,0.5)
   end
+end
+
+function drawEndGame(playerName)
+	screenWidth = love.graphics.getWidth()
+	screenHeight = love.graphics.getHeight()
+	love.graphics.setColor(244/255, 67/255, 54/255, 200/255)
+	love.graphics.rectangle("fill", 0, 0, screenWidth, screenHeight)
+	
+	-- reset the color
+	love.graphics.setColor(1, 1, 1)
+	
+	-- set the font
+	love.graphics.setFont(regFont)
+
+	msg = "Player " .. playerName .. " wins!"
+	directions = "Press enter to play again"
+	msgWidth = regFont:getWidth(msg)
+	dirWidth = regFont:getWidth(directions)
+	love.graphics.printf(msg, screenWidth/2 - msgWidth/2, screenHeight/2, msgWidth, "center")
+	love.graphics.printf(directions, screenWidth/2 - dirWidth/2, screenHeight/2 + 100, dirWidth, "center")
+end
+
+function restartGame()
+	if #state.livePlayers <= 1 then 
+		me.x = 3500
+		me.y = 0
+
+		me2.x = 3600
+		me2.y = 0
+
+		for i = 1, #state.deadPlayers do
+			p = state.deadPlayers[i]
+			table.insert(state.livePlayers, state.deadPlayers[i])
+    		map.world:add(p, p.x, p.y, p.w, p.h)
+		end
+
+		state.deadPlayers = {}
+
+		-- reset live players
+		for i = 1, #state.livePlayers do
+			state.livePlayers[i].lives = 4
+			state.livePlayers[i].hp = 100
+		end
+	end
 end
 
 return game
