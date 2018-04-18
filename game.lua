@@ -74,7 +74,6 @@ function updatePlayer(dt, player)
 	return "slide"
     end)
     player.x, player.y = actualX, actualY
-
     if len > 0 then
 	player.canJump = true
     end
@@ -116,7 +115,7 @@ function killPlayer(player)
     end
   end
   map.world:remove(player)
-  table.remove(state.livePlayers, i)
+  table.remove(state.livePlayers, ii)
   table.insert(state.deadPlayers, player)
 end
 
