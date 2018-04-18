@@ -347,11 +347,11 @@ end
 function drawEndGame(playerName)
 	screenWidth = love.graphics.getWidth()
 	screenHeight = love.graphics.getHeight()
-	love.graphics.setColor(244, 67, 54, 200)
+	love.graphics.setColor(244/255, 67/255, 54/255, 200/255)
 	love.graphics.rectangle("fill", 0, 0, screenWidth, screenHeight)
 	
 	-- reset the color
-	love.graphics.setColor(255, 255, 255)
+	love.graphics.setColor(1, 1, 1)
 	
 	-- set the font
 	love.graphics.setFont(regFont)
