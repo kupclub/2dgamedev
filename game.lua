@@ -87,6 +87,46 @@ function uncrouch(player)
 
 end
 
+function gamepadInput() 
+	joysticks = love.joystick.getJoysticks()
+
+	for i = 1,2 do --#players
+		if joysticks[i] then
+			if joysticks[i]:isGamepadDown("a") then
+				beholder.trigger("player"..i.."-up")
+			end
+
+			if joysticks[i]:isGamepadDown("dpleft") then
+				beholder.trigger("player"..i.."-left")
+			end
+
+			if joysticks[i]:isGamepadDown("dpright") then
+				beholder.trigger("player"..i.."-right")
+			end
+
+			if joysticks[i]:isGamepadDown("dpup") then
+				beholder.trigger("player"..i.."-up")
+			end
+
+			if joysticks[i]:isGamepadDown("dpdown") then
+				beholder.trigger("player"..i.."-down")
+			end
+
+			if joysticks[i]:isGamepadDown("rightshoulder") then
+				beholder.trigger("player"..i.."-fire")
+			end
+
+			if joysticks[i]:isGamepadDown("start") then
+				beholder.trigger("restart-game")
+			end
+
+      			if joysticks[i]:isGamepadDown("guide") then
+			        debug.debug()
+			end
+		end
+	end
+end
+
 function updatePlayer(dt, player)
     player.vy = player.vy + GRAVITY
     local goalX, goalY = player.x + player.vx * dt, player.y + player.vy * dt
@@ -97,6 +137,8 @@ function updatePlayer(dt, player)
 	return "slide"
     end)
     player.x, player.y = actualX, actualY
+
+	gamepadInput()
 
     -- reset vy, since we're touching the ground
     for _, c in pairs(cols) do

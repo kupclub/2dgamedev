@@ -72,8 +72,6 @@ function love.update(dt)
         curState:load()
     end
 
-    player:joystickInput()
-
     if love.keyboard.isDown("left") then
         beholder.trigger("player1-left")
     end
