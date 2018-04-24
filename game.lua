@@ -346,6 +346,8 @@ faces={
 
 
 function game:draw()
+    -- set the font
+    love.graphics.setFont(regFont)
     cam:follow(me, me2)
 
     -- start the camera
