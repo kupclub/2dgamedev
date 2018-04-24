@@ -26,6 +26,8 @@ function love.load()
         error("YOU NEED TO IMPLEMENT A LOAD CALL!")
     end
     curState:load()
+
+    joysticks = love.joystick.getJoysticks()
 end
 
 function love.draw()
@@ -55,7 +57,7 @@ function love.keyreleased(key, scancode)
     end
 end
 
-function love.update(dt)
+function love.update(dt)	
     if not curState["update"] then
         error("YOU NEED TO IMPLEMENT AN UPDATE CALL! (with signature module:update(dt))")
     end
@@ -69,6 +71,8 @@ function love.update(dt)
         curState = states[r]
         curState:load()
     end
+
+    player:joystickInput()
 
     if love.keyboard.isDown("left") then
         beholder.trigger("player1-left")
@@ -117,4 +121,5 @@ function love.update(dt)
     if love.keyboard.isDown("f8") then
         debug.debug()
     end
+
 end

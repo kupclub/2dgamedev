@@ -147,10 +147,11 @@ function killPlayer(player)
 end
 
 function takeDamage(player)
+	if joysticks[1] then joysticks[1]:setVibration(1,1, 0.2) end
 	player.hp = player.hp - 10
   hit:seek(0)
   hit:play()
-	-- death state
+  	-- death state
 	if player.hp <= 0 then
 		player.hp = 100
 		player.lives = player.lives - 1
