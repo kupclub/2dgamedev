@@ -36,7 +36,7 @@ function newPlayer(x_, y_, skin_, name_)
 	x = x_, y = y_,
 	vx = 0, vy = GRAVITY,
 	canJump = false,
-  iscrouched=false,
+	iscrouched=false,
 	direction = 1,
 	lastfire = 0,
 	w = 70, h = 95,
@@ -166,8 +166,20 @@ function takeDamage(player)
 	end
 end
 
-me = newPlayer(3500, 0,"pink", "Charles")
-me2 = newPlayer(3600, 0,"green", "Aaron")
+-- setup game
+function restartGame()
+  for _, p in pairs(state.livePlayers) do
+    map.world:remove(p)
+  end
+
+  state.livePlayers = {}
+  state.deadPlayers = {}
+
+  me = newPlayer(3500, 0,"pink", "Charles")
+  me2 = newPlayer(3600, 0,"green", "Aaron")
+end
+
+restartGame()
 
 beholder.group(me, function()
     beholder.observe("player1-up", function() jump(me) end)
@@ -190,7 +202,11 @@ beholder.group(me2, function()
 end)
 
 beholder.observe("take-damage", function(player) takeDamage(player) end)
-beholder.observe("restart-game", function() restartGame() end)
+beholder.observe("restart-game", function()
+  if #state.livePlayers <= 1 then
+    restartGame()
+  end
+end)
 
 local foo = enemy:new("slime", 200,150)
 map.world:add(enemy.stack[foo], enemy.stack[foo].x,enemy.stack[foo].y, 52,28)
@@ -397,30 +413,6 @@ function drawEndGame(playerName)
 	dirWidth = regFont:getWidth(directions)
 	love.graphics.printf(msg, screenWidth/2 - msgWidth/2, screenHeight/2, msgWidth, "center")
 	love.graphics.printf(directions, screenWidth/2 - dirWidth/2, screenHeight/2 + 100, dirWidth, "center")
-end
-
-function restartGame()
-	if #state.livePlayers <= 1 then
-		me.x = 3500
-		me.y = 0
-
-		me2.x = 3600
-		me2.y = 0
-
-		for i = 1, #state.deadPlayers do
-			p = state.deadPlayers[i]
-			table.insert(state.livePlayers, state.deadPlayers[i])
-    		map.world:add(p, p.x, p.y, p.w, p.h)
-		end
-
-		state.deadPlayers = {}
-
-		-- reset live players
-		for i = 1, #state.livePlayers do
-			state.livePlayers[i].lives = 4
-			state.livePlayers[i].hp = 100
-		end
-	end
 end
 
 return game
