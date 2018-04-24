@@ -44,7 +44,7 @@ function camera:setScale(sx, sy)
   self.scaleY = sy or self.scaleY
 end
 
-local cameraPadding = 175
+local cameraPadding = 300
 
 function camera:follow(a, b)
     if type(a) ~= "table" then

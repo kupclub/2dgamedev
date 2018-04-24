@@ -77,9 +77,16 @@ function updatePlayer(dt, player)
 	return "slide"
     end)
     player.x, player.y = actualX, actualY
+
+    -- reset vy, since we're touching the ground
+    for _, c in pairs(cols) do
+      if c.normal.y == -1 then
+	player.vy = GRAVITY
+      end
+    end
+
     if len > 0 then
 	player.canJump = true
-	player.vy = GRAVITY
     end
 
     -- reset vx so player input doesn't keep vx going when a key is released
