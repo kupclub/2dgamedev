@@ -9,7 +9,7 @@ function love.conf(t)
 
     t.audio.mixwithsystem = true        -- Keep background music playing when opening LOVE (boolean, iOS and Android only)
 
-    t.window.title = "Blarg"            -- The window title (string)
+    t.window.title = "AAron V.S. Charles 2: Electric Boogaloo"            -- The window title (string)
     t.window.icon = nil                 -- Filepath to an image to use as the window's icon (string)
     t.window.fullscreen = true          -- Enable fullscreen (boolean)
     t.window.fullscreentype = "desktop" -- Choose between "desktop" fullscreen or "exclusive" fullscreen mode (string)
