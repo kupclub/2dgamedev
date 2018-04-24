@@ -259,7 +259,6 @@ crouch=love.graphics.newQuad(364,98,70,72,player_attrs.skins["pink"]:getDimensio
 deadplayer=love.graphics.newImage('res/img/skeleton.png')
 
 function drawDeadPlayer(player)
-  -- TODO(chris) add tombstone for this
   love.graphics.draw(deadplayer, player.x, player.y)
 end
 
