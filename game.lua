@@ -243,7 +243,6 @@ run2=love.graphics.newQuad(73,98,70,95,player_attrs.skins["pink"]:getDimensions(
 deadplayer=love.graphics.newImage('res/img/skeleton.png')
 
 function drawDeadPlayer(player)
-  -- TODO(chris) add tombstone for this
   love.graphics.draw(deadplayer, player.x, player.y)
 end
 

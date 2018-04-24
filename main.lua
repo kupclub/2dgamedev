@@ -35,6 +35,26 @@ function love.draw()
     curState:draw()
 end
 
+function love.keypressed(key, scancode, isrepeat)
+    if key == 'down' then
+        beholder.trigger("player1-crouch")
+    end
+
+    if key == 's' then
+        beholder.trigger("player2-crouch")
+    end
+end
+
+function love.keyreleased(key, scancode)
+    if key == 'down' then
+        beholder.trigger("player1-uncrouch")
+    end
+
+    if key == 's' then
+        beholder.trigger("player2-uncrouch")
+    end
+end
+
 function love.update(dt)
     if not curState["update"] then
         error("YOU NEED TO IMPLEMENT AN UPDATE CALL! (with signature module:update(dt))")
