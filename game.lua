@@ -43,7 +43,8 @@ function newPlayer(x_, y_, skin_, name_)
   	skin=skin_,
   	hp = 100,
   	lives = 4,
-	name=name_
+	name=name_,
+	ammo=100
     }
     table.insert(state.livePlayers, p)
     map.world:add(p, p.x, p.y, p.w, p.h)
