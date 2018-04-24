@@ -73,18 +73,16 @@ function crouch(player)
   player.h=72
   player.iscrouched=true
   player.y=player.y + 23
-  map.world:update(player,player.x,player.y,player.w,player.h)
   player.curSpeed=0.5
-
+  map.world:update(player,player.x,player.y,player.w,player.h)
 end
 
 function uncrouch(player)
   player.h=95
   player.iscrouched=false
   player.y=player.y - 23
-  map.world:update(player,player.x,player.y,player.w,player.h)
   player.curSpeed=1
-
+  map.world:update(player,player.x,player.y,player.w,player.h)
 end
 
 function updatePlayer(dt, player)
@@ -150,6 +148,7 @@ function killPlayer(player)
   map.world:remove(player)
   table.remove(state.livePlayers, ii)
   table.insert(state.deadPlayers, player)
+  beholder.stopObserving(player)
 end
 
 function takeDamage(player)
@@ -170,6 +169,7 @@ end
 function restartGame()
   for _, p in pairs(state.livePlayers) do
     map.world:remove(p)
+    beholder.stopObserving(p)
   end
 
   state.livePlayers = {}
@@ -177,30 +177,29 @@ function restartGame()
 
   me = newPlayer(3500, 0,"pink", "Charles")
   me2 = newPlayer(3600, 0,"green", "Aaron")
+
+  beholder.group(me, function()
+      beholder.observe("player1-up", function() jump(me) end)
+      beholder.observe("player1-crouch", function() crouch(me) end)
+      beholder.observe("player1-uncrouch", function() uncrouch(me) end)
+      --beholder.observe("control-down", player:jump)
+      beholder.observe("player1-left", function() left(me) end)
+      beholder.observe("player1-right", function() right(me) end)
+      beholder.observe("player1-fire", function() fireGun(me) end)
+  end)
+
+  beholder.group(me2, function()
+      beholder.observe("player2-up", function() jump(me2) end)
+      --beholder.observe("control-down", player:jump)
+      beholder.observe("player2-crouch", function() crouch(me2) end)
+      beholder.observe("player2-uncrouch", function() uncrouch(me2) end)
+      beholder.observe("player2-left", function() left(me2) end)
+      beholder.observe("player2-right", function() right(me2) end)
+      beholder.observe("player2-fire", function() fireGun(me2) end)
+  end)
 end
 
 restartGame()
-
-beholder.group(me, function()
-    beholder.observe("player1-up", function() jump(me) end)
-    beholder.observe("player1-crouch", function() crouch(me) end)
-    beholder.observe("player1-uncrouch", function() uncrouch(me) end)
-    --beholder.observe("control-down", player:jump)
-    beholder.observe("player1-left", function() left(me) end)
-    beholder.observe("player1-right", function() right(me) end)
-    beholder.observe("player1-fire", function() fireGun(me) end)
-end)
-
-beholder.group(me2, function()
-    beholder.observe("player2-up", function() jump(me2) end)
-    --beholder.observe("control-down", player:jump)
-    beholder.observe("player2-crouch", function() crouch(me2) end)
-    beholder.observe("player2-uncrouch", function() uncrouch(me2) end)
-    beholder.observe("player2-left", function() left(me2) end)
-    beholder.observe("player2-right", function() right(me2) end)
-    beholder.observe("player2-fire", function() fireGun(me2) end)
-end)
-
 beholder.observe("take-damage", function(player) takeDamage(player) end)
 beholder.observe("restart-game", function()
   if #state.livePlayers <= 1 then
