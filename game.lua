@@ -15,7 +15,6 @@ local state = {
 
 FIRETIME = 0.2
 MAXBULLETS = 40
-
 GRAVITY = 9.8
 
 player_attrs = {
@@ -37,14 +36,16 @@ function newPlayer(x_, y_, skin_, name_)
 	x = x_, y = y_,
 	vx = 0, vy = GRAVITY,
 	canJump = false,
-  iscrouched=false,
+	iscrouched=false,
 	direction = 1,
 	lastfire = 0,
 	w = 70, h = 95,
   	skin=skin_,
   	hp = 100,
   	lives = 4,
-	name=name_
+	name=name_,
+	curSpeed=1,
+	numBullets=100
     }
     table.insert(state.livePlayers, p)
     map.world:add(p, p.x, p.y, p.w, p.h)
@@ -52,18 +53,18 @@ function newPlayer(x_, y_, skin_, name_)
 end
 
 function left(player)
-    player.vx = -player_attrs.speed
+    player.vx = -player_attrs.speed * player.curSpeed
     player.direction=-1
 end
 
 function right(player)
-    player.vx = player_attrs.speed
+    player.vx = player_attrs.speed * player.curSpeed
     player.direction=1
 end
 
 function jump(player)
     if player.canJump then
-	player.vy = -player_attrs.jumpSpeed
+	player.vy = -player_attrs.jumpSpeed * player.curSpeed
 	player.canJump = false
     end
 end
@@ -73,6 +74,8 @@ function crouch(player)
   player.iscrouched=true
   player.y=player.y + 23
   map.world:update(player,player.x,player.y,player.w,player.h)
+  player.curSpeed=0.5
+
 end
 
 function uncrouch(player)
@@ -80,6 +83,8 @@ function uncrouch(player)
   player.iscrouched=false
   player.y=player.y - 23
   map.world:update(player,player.x,player.y,player.w,player.h)
+  player.curSpeed=1
+
 end
 
 function updatePlayer(dt, player)
@@ -112,7 +117,7 @@ fire = love.audio.newSource("res/sound/shoot.ogg", "static")
 
 
 function fireGun(player)
-    if love.timer.getTime() - player.lastfire > FIRETIME then
+    if love.timer.getTime() - player.lastfire > FIRETIME and player.numBullets > 0 then
 	local b = {
 	    type = 'bullet',
 	    owner = player,
@@ -127,6 +132,7 @@ function fireGun(player)
   fire:play()
 	table.insert(state.bullets, b)
 	player.lastfire = love.timer.getTime()
+	player.numBullets = player.numBullets - 1
     end
 end
 
@@ -134,7 +140,7 @@ hit = love.audio.newSource("res/sound/hit.mp3", "static")
 
 function killPlayer(player)
   -- FIXME(charles) this doesn't fail gracefully
-  local ii = 0
+  local ii = 1
   for i, p in ipairs(state.livePlayers) do
     if p == player then
       ii = i
@@ -161,8 +167,20 @@ function takeDamage(player)
 	end
 end
 
-me = newPlayer(3500, 0,"pink", "Charles")
-me2 = newPlayer(3600, 0,"green", "Aaron")
+-- setup game
+function restartGame()
+  for _, p in pairs(state.livePlayers) do
+    map.world:remove(p)
+  end
+
+  state.livePlayers = {}
+  state.deadPlayers = {}
+
+  me = newPlayer(3500, 0,"pink", "Charles")
+  me2 = newPlayer(3600, 0,"green", "Aaron")
+end
+
+restartGame()
 
 beholder.group(me, function()
     beholder.observe("player1-up", function() jump(me) end)
@@ -185,7 +203,11 @@ beholder.group(me2, function()
 end)
 
 beholder.observe("take-damage", function(player) takeDamage(player) end)
-beholder.observe("restart-game", function() restartGame() end)
+beholder.observe("restart-game", function()
+  if #state.livePlayers <= 1 then
+    restartGame()
+  end
+end)
 
 local foo = enemy:new("slime", 200,150)
 map.world:add(enemy.stack[foo], enemy.stack[foo].x,enemy.stack[foo].y, 52,28)
@@ -325,6 +347,8 @@ faces={
 
 
 function game:draw()
+    -- set the font
+    love.graphics.setFont(regFont)
     cam:follow(me, me2)
 
     -- start the camera
@@ -350,17 +374,17 @@ function game:draw()
 
     cam:unset()
 
-	if #state.livePlayers <= 1 then
+	if #state.livePlayers == 1 then
 		drawEndGame(state.livePlayers[1].name)
 	end
 
     for i = 1, #state.livePlayers do
       local p = state.livePlayers[i]
-      numLives(10,30 * i, p.skin,p.lives)
+      numLives(10,30 * i, p.skin,p.lives, p.numBullets)
     end
 end
 
-function numLives(x,y,avatar,lives)
+function numLives(x,y,avatar,lives,bullets)
   love.graphics.draw(hudsprite, faces[avatar], x, y,0,0.5,0.5)
 
   for i = 1, 4 do
@@ -371,6 +395,7 @@ function numLives(x,y,avatar,lives)
     end
     love.graphics.draw(hudsprite, img, x + (i * (52/2)), y,0,0.5,0.5)
   end
+  love.graphics.print(bullets,x + (5 * (52/2)),y)
 end
 
 function drawEndGame(playerName)
@@ -391,30 +416,6 @@ function drawEndGame(playerName)
 	dirWidth = regFont:getWidth(directions)
 	love.graphics.printf(msg, screenWidth/2 - msgWidth/2, screenHeight/2, msgWidth, "center")
 	love.graphics.printf(directions, screenWidth/2 - dirWidth/2, screenHeight/2 + 100, dirWidth, "center")
-end
-
-function restartGame()
-	if #state.livePlayers <= 1 then
-		me.x = 3500
-		me.y = 0
-
-		me2.x = 3600
-		me2.y = 0
-
-		for i = 1, #state.deadPlayers do
-			p = state.deadPlayers[i]
-			table.insert(state.livePlayers, state.deadPlayers[i])
-    		map.world:add(p, p.x, p.y, p.w, p.h)
-		end
-
-		state.deadPlayers = {}
-
-		-- reset live players
-		for i = 1, #state.livePlayers do
-			state.livePlayers[i].lives = 4
-			state.livePlayers[i].hp = 100
-		end
-	end
 end
 
 return game
