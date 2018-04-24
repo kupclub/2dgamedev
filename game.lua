@@ -79,7 +79,7 @@ function updatePlayer(dt, player)
     player.x, player.y = actualX, actualY
     if len > 0 then
 	player.canJump = true
-	player.vy = 0
+	player.vy = GRAVITY
     end
 
     -- reset vx so player input doesn't keep vx going when a key is released
