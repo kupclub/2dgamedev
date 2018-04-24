@@ -140,7 +140,7 @@ hit = love.audio.newSource("res/sound/hit.mp3", "static")
 
 function killPlayer(player)
   -- FIXME(charles) this doesn't fail gracefully
-  local ii = 0
+  local ii = 1
   for i, p in ipairs(state.livePlayers) do
     if p == player then
       ii = i
@@ -371,7 +371,7 @@ function game:draw()
 
     cam:unset()
 
-	if #state.livePlayers <= 1 then
+	if #state.livePlayers == 1 then
 		drawEndGame(state.livePlayers[1].name)
 	end
 
