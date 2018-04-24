@@ -46,7 +46,7 @@ function newPlayer(x_, y_, skin_, name_)
   	lives = 4,
 	name=name_,
 	curSpeed=1,
-	ammo=100
+	numBullets=100
     }
     table.insert(state.livePlayers, p)
     map.world:add(p, p.x, p.y, p.w, p.h)
@@ -361,11 +361,11 @@ function game:draw()
 
     for i = 1, #state.livePlayers do
       local p = state.livePlayers[i]
-      numLives(10,30 * i, p.skin,p.lives)
+      numLives(10,30 * i, p.skin,p.lives, p.numBullets)
     end
 end
 
-function numLives(x,y,avatar,lives)
+function numLives(x,y,avatar,lives,bullets)
   love.graphics.draw(hudsprite, faces[avatar], x, y,0,0.5,0.5)
 
   for i = 1, 4 do
@@ -376,6 +376,7 @@ function numLives(x,y,avatar,lives)
     end
     love.graphics.draw(hudsprite, img, x + (i * (52/2)), y,0,0.5,0.5)
   end
+  love.graphics.print(bullets,x + (5 * (52/2)),y)
 end
 
 function drawEndGame(playerName)
