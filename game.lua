@@ -15,7 +15,6 @@ local state = {
 
 FIRETIME = 0.2
 MAXBULLETS = 40
-
 GRAVITY = 9.8
 
 player_attrs = {
@@ -118,7 +117,7 @@ fire = love.audio.newSource("res/sound/shoot.ogg", "static")
 
 
 function fireGun(player)
-    if love.timer.getTime() - player.lastfire > FIRETIME then
+    if love.timer.getTime() - player.lastfire > FIRETIME and player.numBullets > 0 then
 	local b = {
 	    type = 'bullet',
 	    owner = player,
@@ -133,6 +132,7 @@ function fireGun(player)
   fire:play()
 	table.insert(state.bullets, b)
 	player.lastfire = love.timer.getTime()
+	player.numBullets = player.numBullets - 1
     end
 end
 
