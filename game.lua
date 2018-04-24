@@ -37,6 +37,7 @@ function newPlayer(x_, y_, skin_, name_)
 	x = x_, y = y_,
 	vx = 0, vy = GRAVITY,
 	canJump = false,
+  iscrouched=false,
 	direction = 1,
 	lastfire = 0,
 	w = 70, h = 95,
@@ -44,6 +45,7 @@ function newPlayer(x_, y_, skin_, name_)
   	hp = 100,
   	lives = 4,
 	name=name_,
+	curSpeed=1,
 	ammo=100
     }
     table.insert(state.livePlayers, p)
@@ -52,20 +54,38 @@ function newPlayer(x_, y_, skin_, name_)
 end
 
 function left(player)
-    player.vx = -player_attrs.speed
+    player.vx = -player_attrs.speed * player.curSpeed
     player.direction=-1
 end
 
 function right(player)
-    player.vx = player_attrs.speed
+    player.vx = player_attrs.speed * player.curSpeed
     player.direction=1
 end
 
 function jump(player)
     if player.canJump then
-	player.vy = -player_attrs.jumpSpeed
+	player.vy = -player_attrs.jumpSpeed * player.curSpeed
 	player.canJump = false
     end
+end
+
+function crouch(player)
+  player.h=72
+  player.iscrouched=true
+  player.y=player.y + 23
+  map.world:update(player,player.x,player.y,player.w,player.h)
+  player.curSpeed=0.5
+
+end
+
+function uncrouch(player)
+  player.h=95
+  player.iscrouched=false
+  player.y=player.y - 23
+  map.world:update(player,player.x,player.y,player.w,player.h)
+  player.curSpeed=1
+
 end
 
 function updatePlayer(dt, player)
@@ -151,6 +171,8 @@ me2 = newPlayer(3600, 0,"green", "Aaron")
 
 beholder.group(me, function()
     beholder.observe("player1-up", function() jump(me) end)
+    beholder.observe("player1-crouch", function() crouch(me) end)
+    beholder.observe("player1-uncrouch", function() uncrouch(me) end)
     --beholder.observe("control-down", player:jump)
     beholder.observe("player1-left", function() left(me) end)
     beholder.observe("player1-right", function() right(me) end)
@@ -160,6 +182,8 @@ end)
 beholder.group(me2, function()
     beholder.observe("player2-up", function() jump(me2) end)
     --beholder.observe("control-down", player:jump)
+    beholder.observe("player2-crouch", function() crouch(me2) end)
+    beholder.observe("player2-uncrouch", function() uncrouch(me2) end)
     beholder.observe("player2-left", function() left(me2) end)
     beholder.observe("player2-right", function() right(me2) end)
     beholder.observe("player2-fire", function() fireGun(me2) end)
@@ -241,6 +265,7 @@ stand=love.graphics.newQuad(0,0,70,95,player_attrs.skins["pink"]:getDimensions()
 jumpFrame=love.graphics.newQuad(436,92,70,95,player_attrs.skins["pink"]:getDimensions())
 run1=love.graphics.newQuad(0,95,70,95,player_attrs.skins["pink"]:getDimensions())
 run2=love.graphics.newQuad(73,98,70,95,player_attrs.skins["pink"]:getDimensions())
+crouchFrame=love.graphics.newQuad(364,98,70,72,player_attrs.skins["pink"]:getDimensions())
 deadplayer=love.graphics.newImage('res/img/skeleton.png')
 
 function drawDeadPlayer(player)
@@ -255,27 +280,28 @@ function drawPlayer(player)
 	     drawX = drawX + player.w
     end
     time=love.timer.getTime() * 10
-    if player.canJump then
-      if player.vx ~= 0 then
-         if (time % 6) > 3 then
-  	        love.graphics.draw(img, run1, drawX, player.y,0,player.direction,1)
-  	     else
-  	        love.graphics.draw(img, run2, drawX, player.y,0,player.direction,1)
-  	     end
-      else
-        if (time % 6) > 3 then
-           love.graphics.draw(img, stand, drawX, player.y,0,player.direction,1)
-        else
-           love.graphics.draw(img, stand, drawX, player.y,0,player.direction,1)
-        end
-      end
+    --love.graphics.rectangle('line',player.x,player.y,player.w,player.h)
+    --love.graphics.rectangle('line',map.world:getRect(player))
+    if player.iscrouched then
+       love.graphics.draw(img, crouchFrame, drawX, player.y,0,player.direction,1)
     else
-	     if (time % 6) > 3 then
-	        love.graphics.draw(img, jumpFrame, drawX, player.y,0,player.direction,1)
-	     else
-	        love.graphics.draw(img, jumpFrame, drawX, player.y,0,player.direction,1)
-	     end
-
+      if player.canJump then
+        if player.vx ~= 0 then
+           if (time % 6) > 3 then
+    	        love.graphics.draw(img, run1, drawX, player.y,0,player.direction,1)
+    	     else
+    	        love.graphics.draw(img, run2, drawX, player.y,0,player.direction,1)
+    	     end
+        else
+          if (time % 6) > 3 then
+             love.graphics.draw(img, stand, drawX, player.y,0,player.direction,1)
+          else
+             love.graphics.draw(img, stand, drawX, player.y,0,player.direction,1)
+          end
+        end
+      else
+	       love.graphics.draw(img, jumpFrame, drawX, player.y,0,player.direction,1)
+      end
     end
 
 	health = player.w * (player.hp / 100)
