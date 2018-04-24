@@ -35,7 +35,7 @@ function newPlayer(x_, y_, skin_, name_)
     local p = {
 	type = "player",
 	x = x_, y = y_,
-	vx = 0, vy = 0,
+	vx = 0, vy = GRAVITY,
 	canJump = false,
 	direction = 1,
 	lastfire = 0,
@@ -79,6 +79,7 @@ function updatePlayer(dt, player)
     player.x, player.y = actualX, actualY
     if len > 0 then
 	player.canJump = true
+	player.vy = 0
     end
 
     -- reset vx so player input doesn't keep vx going when a key is released
@@ -95,8 +96,8 @@ function fireGun(player)
 	    owner = player,
 	    x = player.x + player.w / 2,
 	    y = player.y + player.h / 2,
-	    vx = 400 * player.direction,
-	    vy = 0,
+	    vx = (400 * player.direction) + player.vx,
+	    vy = 0 + player.vy,
 	    ttl = 3
 	}
 	map.world:add(b, b.x, b.y, 10, 10)
@@ -110,6 +111,7 @@ end
 hit = love.audio.newSource("res/sound/hit.mp3", "static")
 
 function killPlayer(player)
+  -- FIXME(charles) this doesn't fail gracefully
   local ii = 0
   for i, p in ipairs(state.livePlayers) do
     if p == player then
@@ -319,7 +321,7 @@ function game:draw()
     end
 
     cam:unset()
-	
+
 	if #state.livePlayers <= 1 then
 		drawEndGame(state.livePlayers[1].name)
 	end
@@ -348,10 +350,10 @@ function drawEndGame(playerName)
 	screenHeight = love.graphics.getHeight()
 	love.graphics.setColor(244/255, 67/255, 54/255, 200/255)
 	love.graphics.rectangle("fill", 0, 0, screenWidth, screenHeight)
-	
+
 	-- reset the color
 	love.graphics.setColor(1, 1, 1)
-	
+
 	-- set the font
 	love.graphics.setFont(regFont)
 
@@ -364,7 +366,7 @@ function drawEndGame(playerName)
 end
 
 function restartGame()
-	if #state.livePlayers <= 1 then 
+	if #state.livePlayers <= 1 then
 		me.x = 3500
 		me.y = 0
 
