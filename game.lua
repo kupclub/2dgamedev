@@ -41,9 +41,10 @@ function newPlayer(x_, y_, skin_, name_)
 	direction = 1,
 	lastfire = 0,
 	w = 70, h = 95,
-  	skin=skin_,
-  	hp = 100,
-  	lives = 4,
+  skin=skin_,
+  hp = 100,
+  lives = 4,
+  curSpeed=1,
 	name=name_
     }
     table.insert(state.livePlayers, p)
@@ -52,18 +53,18 @@ function newPlayer(x_, y_, skin_, name_)
 end
 
 function left(player)
-    player.vx = -player_attrs.speed
+    player.vx = -player_attrs.speed * player.curSpeed
     player.direction=-1
 end
 
 function right(player)
-    player.vx = player_attrs.speed
+    player.vx = player_attrs.speed * player.curSpeed
     player.direction=1
 end
 
 function jump(player)
     if player.canJump then
-	player.vy = -player_attrs.jumpSpeed
+	player.vy = -player_attrs.jumpSpeed * player.curSpeed
 	player.canJump = false
     end
 end
@@ -73,6 +74,8 @@ function crouch(player)
   player.iscrouched=true
   player.y=player.y + 23
   map.world:update(player,player.x,player.y,player.w,player.h)
+  player.curSpeed=0.5
+
 end
 
 function uncrouch(player)
@@ -80,6 +83,8 @@ function uncrouch(player)
   player.iscrouched=false
   player.y=player.y - 23
   map.world:update(player,player.x,player.y,player.w,player.h)
+  player.curSpeed=1
+
 end
 
 function updatePlayer(dt, player)
