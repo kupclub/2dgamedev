@@ -268,6 +268,10 @@ beholder.observe("restart-game", function()
 end)
 
 function game:load()
+    music = love.audio.newSource("res/sound/music.mp3","stream")
+
+    music:setLooping(true)
+    music:play()
 end
 
 function game:update(dt)
