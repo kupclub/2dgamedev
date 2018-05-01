@@ -60,7 +60,7 @@ function love.keyreleased(key, scancode)
     end
 end
 
-function love.update(dt)	
+function love.update(dt)
     if not curState["update"] then
         error("YOU NEED TO IMPLEMENT AN UPDATE CALL! (with signature module:update(dt))")
     end

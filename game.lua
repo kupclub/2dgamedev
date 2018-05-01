@@ -106,7 +106,7 @@ function love.gamepadreleased(joystick, button)
 	end
 end
 
-function gamepadInput() 
+function gamepadInput()
 	joysticks = love.joystick.getJoysticks()
 
 	for i = 1,#state.livePlayers do
@@ -168,7 +168,6 @@ end
 
 fire = love.audio.newSource("res/sound/shoot.ogg", "static")
 
-
 function fireGun(player)
     if love.timer.getTime() - player.lastfire > FIRETIME and player.numBullets > 0 then
 	local b = {
@@ -190,6 +189,8 @@ function fireGun(player)
 end
 
 hit = love.audio.newSource("res/sound/hit.mp3", "static")
+gameOverS = love.audio.newSource("res/sound/gameOver.wav", "static")
+gameOverS:setVolume(1)
 
 function killPlayer(player)
   -- FIXME(charles) this doesn't fail gracefully
@@ -204,9 +205,11 @@ function killPlayer(player)
   table.remove(state.livePlayers, ii)
   table.insert(state.deadPlayers, player)
   beholder.stopObserving(player)
+  gameOverS:play()
+
 end
 
-function takeDamage(player)	
+function takeDamage(player)
 	if joysticks[player.index] then joysticks[player.index]:setVibration(1,1, 0.2) end
 	player.hp = player.hp - 10
   hit:seek(0)
@@ -398,6 +401,7 @@ faces={
 }
 
 
+
 function game:draw()
     -- set the font
     love.graphics.setFont(regFont)
@@ -428,6 +432,7 @@ function game:draw()
 
 	if #state.livePlayers == 1 then
 		drawEndGame(state.livePlayers[1].name)
+
 	end
 
     for i = 1, #state.livePlayers do
