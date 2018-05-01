@@ -27,12 +27,6 @@ function love.load()
     end
     curState:load()
 
-    joysticks = love.joystick.getJoysticks()
-    thefuckingbutton = ""
-end
-
-function love.gamepadpressed(joystick, button)
-	thefuckingbutton = button
 end
 
 function love.draw()
@@ -40,7 +34,6 @@ function love.draw()
         error("YOU NEED TO IMPLEMENT A DRAW CALL!")
     end
     curState:draw()
-    love.graphics.print(thefuckingbutton,100,100)
 end
 
 function love.keypressed(key, scancode, isrepeat)
@@ -50,6 +43,10 @@ function love.keypressed(key, scancode, isrepeat)
 
     if key == 's' then
         beholder.trigger("player2-crouch")
+    end
+
+    if key == "r" then
+	    love.event.quit("restart")
     end
 end
 

@@ -86,6 +86,16 @@ function uncrouch(player)
   map.world:update(player,player.x,player.y,player.w,player.h)
 end
 
+function love.gamepadpressed(joystick, button)
+	for i = 1,#state.livePlayers do
+		if joysticks[i] then
+			if button == "dpup" then
+				beholder.trigger("player"..i.."-crouch")
+			end
+		end
+	end
+end
+
 function love.gamepadreleased(joystick, button)
 	for i = 1,#state.livePlayers do
 		if joysticks[i] then
@@ -111,10 +121,6 @@ function gamepadInput()
 
 			if joysticks[i]:isGamepadDown("dpup") or joysticks[i]:isGamepadDown("a") then
 				beholder.trigger("player"..i.."-up")
-			end
-
-			if joysticks[i]:isGamepadDown("dpdown") then
-				beholder.trigger("player"..i.."-crouch")
 			end
 
 			if joysticks[i]:isGamepadDown("rightshoulder") then
