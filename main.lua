@@ -27,7 +27,6 @@ function love.load()
     end
     curState:load()
 
-    joysticks = love.joystick.getJoysticks()
 end
 
 function love.draw()
@@ -45,6 +44,10 @@ function love.keypressed(key, scancode, isrepeat)
     if key == 's' then
         beholder.trigger("player2-crouch")
     end
+
+    if key == "r" then
+	    love.event.quit("restart")
+    end
 end
 
 function love.keyreleased(key, scancode)
@@ -57,7 +60,7 @@ function love.keyreleased(key, scancode)
     end
 end
 
-function love.update(dt)	
+function love.update(dt)
     if not curState["update"] then
         error("YOU NEED TO IMPLEMENT AN UPDATE CALL! (with signature module:update(dt))")
     end
