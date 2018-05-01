@@ -217,7 +217,7 @@ function takeDamage(player)
 		player.lives = player.lives - 1
 	end
 	if player.lives <= 0 then
-	  if joysticks[player.index] then joysticks[player.index]:setVibration(1,1, 0.6) end
+	  if joysticks[player.index] then joysticks[player.index]:setVibration(1,1, 2) end
 	  killPlayer(player)
 	end
 end
