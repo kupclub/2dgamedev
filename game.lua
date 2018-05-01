@@ -45,7 +45,8 @@ function newPlayer(x_, y_, skin_, name_)
   	lives = 4,
 	name=name_,
 	curSpeed=1,
-	numBullets=100
+	numBullets=100,
+	index = #state.livePlayers + 1,
     }
     table.insert(state.livePlayers, p)
     map.world:add(p, p.x, p.y, p.w, p.h)
@@ -85,15 +86,21 @@ function uncrouch(player)
   map.world:update(player,player.x,player.y,player.w,player.h)
 end
 
+function love.gamepadreleased(joystick, button)
+	for i = 1,#state.livePlayers do
+		if joysticks[i] then
+			if button == "dpdown" then
+				beholder.trigger("player"..i.."-uncrouch")
+			end
+		end
+	end
+end
+
 function gamepadInput() 
 	joysticks = love.joystick.getJoysticks()
 
-	for i = 1,2 do --#players
+	for i = 1,#state.livePlayers do
 		if joysticks[i] then
-			if joysticks[i]:isGamepadDown("a") then
-				beholder.trigger("player"..i.."-up")
-			end
-
 			if joysticks[i]:isGamepadDown("dpleft") then
 				beholder.trigger("player"..i.."-left")
 			end
@@ -102,12 +109,12 @@ function gamepadInput()
 				beholder.trigger("player"..i.."-right")
 			end
 
-			if joysticks[i]:isGamepadDown("dpup") then
+			if joysticks[i]:isGamepadDown("dpup") or joysticks[i]:isGamepadDown("a") then
 				beholder.trigger("player"..i.."-up")
 			end
 
 			if joysticks[i]:isGamepadDown("dpdown") then
-				beholder.trigger("player"..i.."-down")
+				beholder.trigger("player"..i.."-crouch")
 			end
 
 			if joysticks[i]:isGamepadDown("rightshoulder") then
@@ -193,8 +200,8 @@ function killPlayer(player)
   beholder.stopObserving(player)
 end
 
-function takeDamage(player)
-	if joysticks[1] then joysticks[1]:setVibration(1,1, 0.2) end
+function takeDamage(player)	
+	if joysticks[player.index] then joysticks[player.index]:setVibration(1,1, 0.2) end
 	player.hp = player.hp - 10
   hit:seek(0)
   hit:play()
@@ -204,6 +211,7 @@ function takeDamage(player)
 		player.lives = player.lives - 1
 	end
 	if player.lives <= 0 then
+	  if joysticks[player.index] then joysticks[player.index]:setVibration(1,1, 0.6) end
 	  killPlayer(player)
 	end
 end
@@ -249,9 +257,6 @@ beholder.observe("restart-game", function()
     restartGame()
   end
 end)
-
-local foo = enemy:new("slime", 200,150)
-map.world:add(enemy.stack[foo], enemy.stack[foo].x,enemy.stack[foo].y, 52,28)
 
 function game:load()
 end
